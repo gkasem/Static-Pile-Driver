@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แผนการเดินรถกดเสาเข็ม — ลำดับการกด 100 จุด & กรณีติดรั้ว</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--paper:#f3f0e8;--card:#fbfaf6;--ink:#1c2530;--muted:#5d6874;--line:#d8d2c3;--yellow:#f2b705;--orange:#e0601b;--steel:#5f7184;--steel2:#8e9cab;--blue:#2e6bb3;--green:#2c8a57;--red:#c4372b;--soft:#ece7da;--brown:#a36a2c;--dark:#3d4a58}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Thai",system-ui,sans-serif;font-size:16px;line-height:1.65}
+.mono{font-family:"IBM Plex Mono",monospace}a{color:var(--blue)}
+header.hero{background:var(--ink);color:#f3f0e8;padding:34px 20px 30px;position:relative}
+.hero .stripe{position:absolute;left:0;right:0;bottom:0;height:10px;background:repeating-linear-gradient(-45deg,var(--yellow) 0 18px,var(--ink) 18px 36px)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.hero h1{font-size:clamp(26px,4vw,42px);line-height:1.2;margin:6px 0 10px}
+.hero .kicker{color:var(--yellow);font-weight:600;font-size:14px;letter-spacing:.05em}
+.hero p{max-width:820px;color:#cfd5dc;margin:0}
+.hero a.back{color:#f2b705;text-decoration:none;font-size:14px}
+nav.toc{position:sticky;top:0;z-index:20;background:rgba(243,240,232,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:8px;padding-bottom:8px}
+nav.toc a{white-space:nowrap;text-decoration:none;color:var(--ink);font-size:14px;padding:5px 11px;border-radius:7px}
+nav.toc a:hover{background:var(--ink);color:var(--paper)}
+section{padding:40px 0 8px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 6px;line-height:1.3}
+h2 .no{display:inline-block;background:var(--yellow);color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:.7em;padding:2px 9px;border-radius:6px;margin-right:10px;vertical-align:middle}
+h3{font-size:18px;margin:0 0 8px}
+.lead{color:var(--muted);max-width:880px;margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:960px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+svg{display:block;width:100%;height:auto}
+.btn{font:inherit;font-size:14px;border:1px solid var(--ink);background:var(--card);color:var(--ink);padding:6px 13px;border-radius:8px;cursor:pointer}
+.btn:hover{background:var(--soft)}.btn.primary{background:var(--ink);color:var(--paper)}.btn.on{background:var(--yellow);border-color:var(--yellow);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+label.f{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:3px}
+select,input[type=number]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink)}
+input[type=range]{accent-color:var(--orange);width:100%}
+.note{font-size:13.5px;color:var(--muted)}
+.callout{border-left:4px solid var(--yellow);background:#fff8dd;padding:10px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
+.callout.red{border-color:var(--red);background:#fbe9e6}.callout.blue{border-color:var(--blue);background:#e8f0fa}.callout.green{border-color:var(--green);background:#e7f3ec}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpis div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+.kpis b{display:block;font-family:"IBM Plex Mono",monospace;font-size:20px;line-height:1.25}
+.kpis small{color:var(--muted);font-size:12px}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:right}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t tr.best td{background:#e7f3ec;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.moves{max-height:210px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px;font-size:13.5px}
+.moves div{padding:5px 10px;border-bottom:1px solid #eee}
+.moves div.on{background:#fff1e8;font-weight:600}
+.dir{display:inline-block;min-width:22px;text-align:center;font-weight:700}
+.rule{display:flex;gap:12px;align-items:flex-start}
+.rule .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:"IBM Plex Mono"}
+ul.check li{margin-bottom:6px}
+footer{padding:36px 0 60px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <a class="back" href="index.html">← กลับหน้าหลัก: รถกดเสาเข็มทำงานอย่างไร</a>
+  <div class="kicker" style="margin-top:10px">วางแผนหน้างาน · PILE PRESSING ROUTE PLANNING</div>
+  <h1>แผนการเดินรถกดเสาเข็ม</h1>
+  <p>มีเสาเข็ม 100 จุด ควรกดต้นไหนก่อน เดินหน้า ถอยหลัง หรือเดินเข้าซ้าย–ขวาอย่างไรให้เร็วและปลอดภัย และถ้าพื้นที่ติดรั้วชาวบ้านต้องทำอย่างไร — ทดลองวางแผนได้ในหน้านี้</p>
+</div><div class="stripe"></div></header>
+<nav class="toc"><div class="wrap">
+  <a href="#basic">การเดินพื้นฐาน</a><a href="#rules">หลักการเรียงลำดับ</a><a href="#planner">จำลอง 100 จุด</a><a href="#compare">เปรียบเทียบรูปแบบ</a><a href="#fence">กรณีติดรั้ว</a><a href="#check">เช็คลิสต์</a><a href="#src">อ้างอิง</a>
+</div></nav>
+<main class="wrap">
+
+<!-- 1 BASIC -->
+<section id="basic">
+  <h2><span class="no">01</span>รถกดเดินได้ 4 แบบ — และแต่ละแบบเร็วไม่เท่ากัน</h2>
+  <p class="lead">รถกดไม่มีล้อ “ก้าว” ทีละช่วงชักของกระบอก ทิศตามแนวยาวของเครื่อง (ลองบูท) ก้าวได้ยาวกว่าทิศด้านข้าง (ช็อตบูท) หลายเท่า <b>การวางแนวเครื่องให้ขนานกับแถวเสาเข็ม จึงเป็นกุญแจของความเร็ว</b></p>
+  <div class="grid4">
+    <div class="card"><div style="font-size:30px">⬆️⬇️</div><h3>เดินหน้า / ถอยหลัง</h3><p class="note">ใช้ <b>ลองบูท</b> ก้าวละประมาณ 2–3 ม. เร็วที่สุด ใช้เป็นแนวหลักของการเดิน</p></div>
+    <div class="card"><div style="font-size:30px">⬅️➡️</div><h3>เดินเข้าซ้าย / ขวา</h3><p class="note">ใช้ <b>ช็อตบูท</b> ก้าวละประมาณ 0.5–0.8 ม. ช้ากว่ามาก ใช้ขยับระยะสั้น ๆ หรือเปลี่ยนแถว</p></div>
+    <div class="card"><div style="font-size:30px">🔄</div><h3>หมุนตัว</h3><p class="note">หมุนบนโต๊ะหมุนของช็อตบูท ครั้งละไม่กี่องศา หมุน 90° ต้องหลายรอบ ใช้เมื่อจำเป็น เช่น เข้าแนวรั้ว</p></div>
+    <div class="card"><div style="font-size:30px">📍</div><h3>จัดตำแหน่งกด</h3><p class="note">จุดกดหลักอยู่ <b>กลางตัวเครื่อง</b> ต้องเล็งให้ศูนย์กล่องจับตรงหมุดเสาเข็ม แล้วปรับระดับก่อนกด</p></div>
+  </div>
+  <p class="note" style="margin-top:8px">ระยะก้าวและเวลาต่อก้าวในหน้านี้เป็นค่าตัวอย่าง ปรับให้ตรงกับรุ่นเครื่องจริงได้ในตัวจำลอง</p>
+</section>
+
+<!-- 2 RULES -->
+<section id="rules">
+  <h2><span class="no">02</span>หลักการเรียงลำดับการกด</h2>
+  <div class="grid2" style="grid-template-columns:1fr 1fr">
+    <div class="card" style="display:grid;gap:14px">
+      <div class="rule"><div class="n">1</div><div><b>เดินตามแนวยาวของเครื่องเป็นหลัก</b><div class="note">จัดลำดับเป็นแถวขนานแนวลองบูท แล้ว “เลื้อยงู” กลับไปมา (เดินหน้าแถวหนึ่ง ถอยกลับอีกแถว) ลดการเดินด้านข้างที่ช้า</div></div></div>
+      <div class="rule"><div class="n">2</div><div><b>ให้พื้นที่ที่กดแล้วอยู่ “ข้างหลัง” ไม่เดินย้อนข้ามไปมา</b><div class="note">ในผังถี่ ฐานรถจะคร่อมเสาข้างเคียงเป็นปกติ จึงต้องกดหัวเสาให้อยู่ระดับพื้นหรือต่ำกว่า (ใช้ตัวส่ง) และห้ามวางลองบูท/ช็อตบูทบนหัวเสาที่โผล่ — ยิ่งเดินย้อนผ่านบ่อย ยิ่งเสี่ยงหัวเสาแตก เสาเอียง และพื้นทรุดใต้ฐานรถ</div></div></div>
+      <div class="rule"><div class="n">3</div><div><b>ติดอาคาร/รั้วข้างเคียง: เริ่มกดจากฝั่งนั้นก่อน แล้วไล่ออก</b><div class="note">การกดเสาดันดินออกด้านข้างและยกผิวดิน การเริ่มจากฝั่งเพื่อนบ้านทำให้ดินจากต้นหลัง ๆ ถูกดันไปทางที่ว่าง</div></div></div>
+      <div class="rule"><div class="n">4</div><div><b>กลุ่มเสาหนาแน่น: เริ่มจากกลางออกสู่ขอบ</b><div class="note">ลดการอัดดินจนกดต้นท้าย ๆ ยากและดันเสาที่กดแล้วให้ยกตัว แม้จะเดินไกลขึ้น</div></div></div>
+      <div class="rule"><div class="n">5</div><div><b>วางจุดจบใกล้ทางออก</b><div class="note">ต้นสุดท้ายควรอยู่ใกล้ทางออกหรือจุดที่ต้องย้ายเครื่อง จะได้ไม่ต้องเดินข้ามพื้นที่ที่กดแล้วออกไป</div></div></div>
+    </div>
+    <div class="card">
+      <h3>ทำไมลำดับการกดสำคัญ</h3>
+      <p>เสาเข็มกดเป็น “เสาแทนที่ดิน” — <span id="c1"></span></p>
+      <div class="callout red">ผลที่อาจเกิดกับข้างเคียง: อาคารร้าว/เอียง ท่อและสาธารณูปโภคเสียหาย และเสาที่กดไปแล้วถูกดันจนยกตัวหรือเอียง</div>
+      <div class="callout blue" style="margin-top:10px">แนวทางที่ใช้กันในข้อกำหนดงานเสาเข็ม (เช่น มาตรฐานงานเสาเข็มของจีน JGJ 94): กลุ่มเสาหนาแน่นให้กดจากกลางออกสองทางหรือรอบทิศ, ติดอาคารด้านหนึ่งให้เริ่มจากฝั่งอาคารแล้วไล่ออก, ระดับลึกกว่ากดก่อน, เสาใหญ่/ยาวกว่ากดก่อน — ลำดับจริงให้ยึดตามที่วิศวกรกำหนด</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 PLANNER -->
+<section id="planner">
+  <h2><span class="no">03</span>จำลองการเดินกดเสาเข็ม 100 จุด</h2>
+  <p class="lead">เลือกผังเสา แนวรั้ว และรูปแบบการเดิน แล้วกด ▶ ดูรถเดินทีละต้น ระบบจะแยกการเดินแต่ละช่วงเป็น “เดินหน้า/ถอย” และ “เดินซ้าย/ขวา” พร้อมนับก้าว เวลา และจำนวนครั้งที่รถต้องเดินย้อนข้ามเสาที่กดไปแล้ว · คลิกที่จุดเสาเพื่อดูรายละเอียด</p>
+  <div class="card">
+    <div class="row" style="gap:12px;margin-bottom:8px">
+      <label class="f">ผังเสาเข็ม<select id="pLayout"><option value="grid">ตาราง 10 × 10 (ระยะ 2.4 ม.)</option><option value="foot">ฐานรากกลุ่ม 25 ฐาน × 4 ต้น</option><option value="strip">เสาแนวกำแพง 2 แถว × 50</option></select></label>
+      <label class="f">แนวรั้ว/อาคารข้างเคียง<select id="pFence"><option value="none">ไม่มี (พื้นที่โล่ง)</option><option value="N" selected>ด้านบน (ทิศเหนือ)</option><option value="W">ด้านซ้าย (ทิศตะวันตก)</option><option value="NW">มุม: บน + ซ้าย</option></select></label>
+      <label class="f" style="min-width:170px">ระยะรั้ว → เสาแถวนอกสุด: <b id="gapV">1.0</b> ม.<input type="range" id="pGap" min="0.3" max="8" step="0.1" value="1.0"></label>
+      <label class="f">แนวเครื่อง (แนวลองบูท)<select id="pHead"><option value="X">ขนานแกนนอน ↔</option><option value="Y">ขนานแกนตั้ง ↕</option></select></label>
+      <label class="f">รูปแบบการเดิน<select id="pPat">
+        <option value="snakeX">เลื้อยงูตามแถวนอน ↔ (เริ่มฝั่งทางเข้า)</option>
+        <option value="snakeY">เลื้อยงูตามแถวตั้ง ↕ (เริ่มฝั่งทางเข้า)</option>
+        <option value="fence">เริ่มจากฝั่งรั้ว แล้วไล่ออก</option>
+        <option value="center">จากกลางออกสู่ขอบ</option>
+        <option value="nearest">ใกล้สุดก่อน (ประหยัดเวลา)</option>
+        <option value="random">สุ่ม (ไม่มีแผน)</option>
+        <option value="manual">กำหนดเอง (คลิกทีละจุด)</option>
+      </select></label>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <button class="btn primary" id="bPlay">▶ เล่น</button><button class="btn" id="bStep">ทีละต้น ▸</button><button class="btn" id="bEnd">ข้ามไปจบ ⏭</button><button class="btn" id="bReset">↺</button>
+      <label class="f" style="flex-direction:row;align-items:center;gap:6px">ความเร็ว<select id="pSpd"><option value="1">1×</option><option value="3" selected>3×</option><option value="8">8×</option></select></label>
+      <label class="f" style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="pFoot" checked> แสดงรอยเครื่อง</label>
+      <span style="flex:1"></span>
+      <details><summary class="note" style="cursor:pointer">⚙️ สเปกเครื่องและเวลา (ตัวอย่าง)</summary>
+        <div class="row" style="gap:10px;margin-top:8px">
+          <label class="f">ความยาวเครื่อง (ม.)<input type="number" id="mL" value="12" step="0.5" style="width:80px"></label>
+          <label class="f">ความกว้างเครื่อง (ม.)<input type="number" id="mW" value="6.4" step="0.1" style="width:80px"></label>
+          <label class="f">ก้าวลองบูท (ม./วินาที)<span class="row" style="gap:4px"><input type="number" id="sL" value="2.5" step="0.1" style="width:64px"><input type="number" id="tL" value="45" style="width:64px"></span></label>
+          <label class="f">ก้าวช็อตบูท (ม./วินาที)<span class="row" style="gap:4px"><input type="number" id="sS" value="0.6" step="0.1" style="width:64px"><input type="number" id="tS" value="35" style="width:64px"></span></label>
+          <label class="f">กด+ตั้งเสา (นาที/ต้น)<input type="number" id="tP" value="25" style="width:70px"></label>
+          <label class="f">ระยะกดเสาริมขั้นต่ำ (ม.)<input type="number" id="mSide" value="0.7" step="0.1" style="width:70px"></label>
+          <label class="f">ระยะกดเสามุมขั้นต่ำ (ม.)<input type="number" id="mCorner" value="1.3" step="0.1" style="width:70px"></label>
+        </div></details>
+    </div>
+    <div class="grid2">
+      <div>
+        <svg id="plan" style="background:#fff;border:1px solid var(--line);border-radius:10px;touch-action:manipulation"></svg>
+        <div class="legend">
+          <span><i style="background:#cfd5dc;border:1px solid #8e9cab"></i>ยังไม่กด</span>
+          <span><i style="background:#1c2530"></i>กดแล้ว</span>
+          <span><i style="background:#e0601b"></i>กดด้วยชุดเสาริม/มุม</span>
+          <span><i style="background:#c4372b"></i>กดไม่ได้ — ต้องแก้ไข</span>
+          <span><i style="background:#fff;border:2px solid #f2b705"></i>เดินย้อนข้ามเสาที่กดแล้ว</span>
+          <span>▬ ลองบูท · ▮ ช็อตบูท · 🚪 ทางเข้า</span>
+        </div>
+      </div>
+      <div>
+        <div class="kpis">
+          <div><small>กดแล้ว / ทั้งหมด</small><b id="kDone">0 / 100</b></div>
+          <div><small>ระยะเดินรวม</small><b id="kDist">0 ม.</b></div>
+          <div><small>ก้าวเดินหน้า/ถอย (ลองบูท)</small><b id="kLong">0</b></div>
+          <div><small>ก้าวซ้าย/ขวา (ช็อตบูท)</small><b id="kShort">0</b></div>
+          <div><small>เวลาเดินรวม</small><b id="kWalk">0 ชม.</b></div>
+          <div><small>เวลาทั้งงาน (เดิน+กด)</small><b id="kAll">0 วัน</b><small id="kAll2"></small></div>
+          <div><small>เดินย้อนข้ามเสาที่กดแล้ว (ต้น)</small><b id="kOver" style="color:var(--orange)">0</b></div>
+          <div><small>เสาริม/มุม · กดไม่ได้</small><b id="kSide">0 · 0</b></div>
+        </div>
+        <div class="note" style="margin:10px 0 4px">การเดินแต่ละช่วง</div>
+        <div class="moves" id="moves"></div>
+        <div class="callout" id="pMsg" style="margin-top:10px">กด ▶ เพื่อเริ่ม</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 COMPARE -->
+<section id="compare">
+  <h2><span class="no">04</span>เปรียบเทียบทุกรูปแบบการเดิน (ผังและรั้วเดียวกัน)</h2>
+  <p class="lead">ตารางนี้คำนวณใหม่อัตโนมัติเมื่อเปลี่ยนผัง รั้ว หรือแนวเครื่องด้านบน — ลองสลับ “แนวเครื่อง” แล้วดูว่าเวลาเปลี่ยนไปเท่าไหร่</p>
+  <div class="card" style="overflow-x:auto">
+    <table class="t" style="min-width:720px"><thead><tr><th>รูปแบบ</th><th>ระยะเดิน (ม.)</th><th>ก้าวลองบูท</th><th>ก้าวช็อตบูท</th><th>เวลาเดิน (ชม.)</th><th>เดินย้อนข้ามเสาที่กดแล้ว</th><th>เริ่มจากฝั่งรั้ว?</th></tr></thead><tbody id="cmp"></tbody></table>
+    <p class="note" id="cmpNote" style="margin-top:8px"></p>
+  </div>
+</section>
+
+<!-- 5 FENCE -->
+<section id="fence">
+  <h2><span class="no">05</span>กรณีพื้นที่ติดรั้วชาวบ้าน — กดอย่างไร?</h2>
+  <p class="lead">จุดกดหลักอยู่กลางตัวเครื่อง ถ้าเสาอยู่ชิดรั้วกว่าครึ่งความกว้างเครื่อง เครื่องจะชนรั้ว ต้องเปลี่ยนวิธี ลากแถบเลื่อนเพื่อดูว่าแต่ละระยะต้องใช้วิธีไหน</p>
+  <div class="grid2">
+    <div class="card">
+      <div class="row" style="gap:14px">
+        <label class="f" style="min-width:260px;flex:1">ระยะจากแนวรั้วถึงศูนย์เสาเข็ม: <b id="fdV">2.0</b> ม.<input type="range" id="fd" min="0.2" max="6" step="0.05" value="2.0"></label>
+        <label class="f">เสาอยู่ที่<select id="fType"><option value="side">ริมรั้วด้านเดียว</option><option value="corner">มุมรั้ว (สองด้าน)</option></select></label>
+      </div>
+      <svg id="fenceSvg" viewBox="0 0 760 420" style="background:#fff;border:1px solid var(--line);border-radius:10px;margin-top:8px"></svg>
+    </div>
+    <div class="card">
+      <div id="fRes"></div>
+      <h3 style="margin-top:14px">ลำดับขั้นการตัดสินใจ</h3>
+      <ol style="margin:0;padding-left:20px;font-size:14.5px">
+        <li><b>กดกลางเครื่อง</b> — ระยะ ≥ ครึ่งความกว้างเครื่อง + ระยะเผื่อ</li>
+        <li><b>กดด้วยชุดเสาริม</b> (Side piling) — หมุนเครื่องให้ขนานรั้ว ใช้กล่องจับข้างเครื่อง แรงกดต่ำกว่าชุดหลัก</li>
+        <li><b>กดด้วยชุดเสามุม</b> (Corner piling) — สำหรับเสาที่มุมรั้วสองด้าน</li>
+        <li><b>ชิดกว่านั้น</b> — ปรึกษาวิศวกร: ย้ายตำแหน่ง/ใช้คานยื่นรับ, เปลี่ยนเป็นเสาเข็มเจาะหรือไมโครไพล์, ใช้เครื่องเล็ก หรือขออนุญาตรื้อรั้วชั่วคราวแล้วทำคืน</li>
+      </ol>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:14px">
+    <div class="card"><h3>🧭 ลำดับเมื่อติดเพื่อนบ้าน</h3><ul class="check" style="padding-left:18px;margin:0">
+      <li>กดแถวที่ชิดรั้วก่อน แล้วไล่ออกห่าง</li>
+      <li><span id="c2"></span></li>
+      <li><span id="c3"></span></li>
+      <li>หลีกเลี่ยงกดเสาหลายต้นติดกันในจุดเดียว สลับไปกดโซนอื่นให้ดินคลายแรงดัน</li></ul></div>
+    <div class="card"><h3>📸 ก่อนเริ่มงาน</h3><ul class="check" style="padding-left:18px;margin:0">
+      <li>สำรวจและถ่ายภาพสภาพบ้าน/รั้ว/รอยร้าวเดิมของเพื่อนบ้าน มีพยานหรือลงชื่อรับรู้</li>
+      <li>แจ้งเพื่อนบ้าน: วัน เวลาทำงาน ระยะเวลา และช่องทางติดต่อ</li>
+      <li>ตรวจหาท่อ สายไฟ บ่อพัก แนวระบายน้ำใต้ดินตามแนวรั้ว</li>
+      <li>ตรวจว่าแนวเครนสวิงไม่ยื่นข้ามรั้ว และมีที่วางเสาโดยไม่ต้องยกข้ามเพื่อนบ้าน</li></ul></div>
+    <div class="card"><h3>📏 ระหว่างทำงาน</h3><ul class="check" style="padding-left:18px;margin:0">
+      <li><span id="c4"></span></li>
+      <li>ฐานรถห่างแนวรั้ว/รางระบายน้ำพอ กันดินพังเข้าหาเพื่อนบ้าน ถ้าดินอ่อนปูแผ่นเหล็ก</li>
+      <li>ตรวจแนวดิ่งเสาริมบ่อยขึ้น เพราะชุดเสาริมรับแรงเยื้องศูนย์</li>
+      <li>เจอรอยร้าวใหม่หรือดินยก — หยุด แจ้งวิศวกร ปรับลำดับ/ความเร็ว</li></ul></div>
+  </div>
+</section>
+
+<!-- 6 CHECK -->
+<section id="check">
+  <h2><span class="no">06</span>เช็คลิสต์วางแผนก่อนเข้าพื้นที่ (หน้างาน + ขนส่ง)</h2>
+  <div class="grid2" style="grid-template-columns:1fr 1fr">
+    <div class="card"><h3>หน้างาน</h3><ul class="check">
+      <li>ได้ผังเสาเข็มพร้อมเลขต้น ระดับตัดหัวเสา ความยาว และแรงกดของแต่ละต้น</li>
+      <li>ปรับพื้นและบดอัดทางเดินรถ ระบายน้ำไม่ให้ขัง (ลองบูท/ช็อตบูทกดดินสูง)</li>
+      <li>วาดเส้นทางเดินบนผัง กำหนดแนวเครื่อง จุดเริ่ม จุดจบ และจุดหมุนตัว</li>
+      <li>ระบุเสาริม/มุมที่ต้องใช้ชุดพิเศษล่วงหน้า และเช็กแรงกดพิกัดของชุดนั้น</li>
+      <li>วางหมุดเสาเข็มใหม่ทุกครั้งก่อนกด (หมุดอาจเคลื่อนเมื่อรถเดินผ่าน)</li>
+      <li>วางแผนเรื่องหัวเสาที่กดแล้ว: กดหัวเสาให้ต่ำกว่าระดับพื้นทำงานด้วยตัวส่ง ไม่ให้ลองบูท/ช็อตบูทวางบนหัวเสาที่โผล่</li>
+    </ul></div>
+    <div class="card"><h3>การส่งเสาเข็ม (ฝ่ายขนส่ง)</h3><ul class="check">
+      <li>ลำดับส่งเสาตามลำดับการกด — ท่อนที่จะใช้ก่อนอยู่บนสุดของกอง</li>
+      <li>จุดกองเสาอยู่ในรัศมีเครนรถกด และย้ายกองตามแนวที่รถกดเดิน</li>
+      <li>เส้นทางรถส่งเสาไม่ผ่านพื้นที่ที่กดแล้วและไม่ขวางทางเดินรถกด</li>
+      <li>จำนวนเที่ยว/วัน = จำนวนต้นต่อวัน × จำนวนท่อนต่อต้น ÷ ท่อนต่อเที่ยว (ดูผลจากตัวจำลองด้านบน)</li>
+      <li>หน้างานติดชุมชน: ตรวจเวลาที่อนุญาตให้รถใหญ่เข้า–ออก และจุดจอดรอที่ไม่กีดขวางเพื่อนบ้าน</li>
+    </ul>
+    <div class="callout blue" id="truckMsg"></div></div>
+  </div>
+</section>
+
+<footer id="src">
+  <h3 style="color:var(--ink)">แหล่งอ้างอิง</h3>
+  <ol>
+    <li>马宗玉, 张冬明 — การออกแบบมาตรการป้องกันผลกระทบจากการกดเสาเข็ม (挤土效应) และการติดตามผล, 岩土工程学报 2011: <a href="https://www.cgejournal.com/cn/article/pdf/preview/14375.pdf">cgejournal.com</a></li>
+    <li>การเจาะนำ (Pre-boring) ลดการเคลื่อนตัวของดินจากเสาเข็มกด: <a href="https://cgejournal.com/article/id/13275">cgejournal.com</a></li>
+    <li>การควบคุมลำดับและจำนวนต้นต่อวันของเสาเข็ม PHC แบบกด ใกล้อาคาร: <a href="https://search.napstic.cn/literature/periodical/010jxjc202405033">napstic.cn</a></li>
+    <li>Dugan & Freed, Ground Heave Due to Pile Driving (1984): <a href="https://scholarsmine.mst.edu/icchge/1icchge/1icchge-theme1/28">scholarsmine.mst.edu</a></li>
+    <li>JGJ 94-2008 建筑桩基技术规范 (มาตรฐานเทคนิคเสาเข็มอาคาร ประเทศจีน) — หลักลำดับการตอก/กดเสาเข็ม</li>
+    <li>ระยะกดเสาริม/มุมของรถกด ตัวอย่างจากสเปกผู้ผลิต: <a href="https://www.goodeng.com/goodeng-static-pile-press-gpy208/">Goodeng GPY208</a></li>
+  </ol>
+  <p>ตัวเลขทั้งหมดเป็นตัวอย่างเพื่อการเรียนรู้ ลำดับการกดจริงต้องเป็นไปตามข้อกำหนดของวิศวกรผู้ออกแบบและสเปกเครื่องที่ใช้ · <a href="index.html">← กลับหน้าหลัก</a></p>
+</footer>
+</main>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+const fmt=(v,d=0)=>Number(v).toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});
+const C={ink:'#1c2530',orange:'#e0601b',red:'#c4372b',yellow:'#f2b705',dark:'#3d4a58',brown:'#a36a2c',steel:'#5f7184',blue:'#2e6bb3',green:'#2c8a57',muted:'#5d6874'};
+
+// cited facts (filled as text)
+$('#c1').textContent='การกดทำให้ดินด้านล่างเคลื่อนออกด้านข้างและผิวดินยกตัว จึงหลีกเลี่ยงผลกระทบต่ออาคารข้างเคียงไม่ได้ทั้งหมด และแรงดันดินยังดันเสาที่กดไปแล้วให้โก่ง เอียง หรือเคลื่อนตัว ส่วนการยกตัวของดินสัมพันธ์กับปริมาตรดินที่ถูกแทนที่ ลำดับการกด และความไวของดินเหนียว';
+$('#c2').textContent='เจาะนำ (Pre-boring) ที่ตำแหน่งเสา ช่วยลดการดันดิน ยิ่งรูโตและลึกยิ่งลดได้มาก';
+$('#c3').textContent='จำกัดจำนวนต้นที่กดต่อวันในโซนใกล้เพื่อนบ้าน';
+$('#c4').textContent='ติดตั้งจุดวัดการเคลื่อนตัวของดิน/อาคาร และวัดแรงดันน้ำในดินระหว่างกด เพื่อปรับแผนทันที';
+
+/* ---------- state ---------- */
+let P=[],ORDER=[],SEQ=null,anim=null,manual=[];
+function cfg(){return {layout:$('#pLayout').value,fence:$('#pFence').value,gap:+$('#pGap').value,head:$('#pHead').value,pat:$('#pPat').value,
+  L:+$('#mL').value||12,W:+$('#mW').value||6.4,sL:+$('#sL').value||2.5,tL:+$('#tL').value||45,sS:+$('#sS').value||0.6,tS:+$('#tS').value||35,tP:+$('#tP').value||25,side:+$('#mSide').value||0.7,corner:+$('#mCorner').value||1.3,clr:0.3};}
+function layout(t){const a=[];
+  if(t==='grid'){for(let r=0;r<10;r++)for(let c=0;c<10;c++)a.push({x:c*2.4,y:r*2.4});}
+  else if(t==='foot'){for(let fr=0;fr<5;fr++)for(let fc=0;fc<5;fc++)for(const[dx,dy]of[[-.6,-.6],[.6,-.6],[-.6,.6],[.6,.6]])a.push({x:fc*6+dx,y:fr*6+dy});}
+  else{for(let r=0;r<2;r++)for(let c=0;c<50;c++)a.push({x:c*1.2,y:r*1.6});}
+  const mx=Math.min(...a.map(p=>p.x)),my=Math.min(...a.map(p=>p.y));a.forEach((p,i)=>{p.x-=mx;p.y-=my;p.id=i;});return a;}
+function geom(c){const minX=0,minY=0,maxX=Math.max(...P.map(p=>p.x)),maxY=Math.max(...P.map(p=>p.y));
+  return {minX,minY,maxX,maxY,fy:c.fence.includes('N')?-c.gap:null,fx:c.fence.includes('W')?-c.gap:null,entry:{x:maxX+c.L*0.7,y:maxY+c.W*1.2}};}
+// method & machine position per pile
+function methods(c,g){
+  const halfX=c.head==='X'?c.L/2:c.W/2, halfY=c.head==='X'?c.W/2:c.L/2;
+  P.forEach(p=>{p.m='center';p.mx=p.x;p.my=p.y;p.why='';
+    const dN=g.fy!==null?p.y-g.fy:Infinity,dW=g.fx!==null?p.x-g.fx:Infinity;
+    const vN=dN<halfY+c.clr,vW=dW<halfX+c.clr;
+    if(!vN&&!vW)return;
+    if(vN&&vW){ if(dN>=c.corner&&dW>=c.corner){p.m='corner';p.my=p.y+(halfY+0.5);p.mx=p.x+(halfX+0.5);p.why='มุมรั้ว ใช้ชุดกดเสามุม';}else{p.m='no';p.why=`ชิดมุมรั้วเกินไป (${dN.toFixed(1)} / ${dW.toFixed(1)} ม. < ${c.corner} ม.)`;} return;}
+    const d=vN?dN:dW,parallel=vN?(c.head==='X'):(c.head==='Y');
+    if(!parallel){p.m='no';p.why='เครื่องตั้งฉากกับรั้ว — ต้องหมุนเครื่องให้ขนานรั้วจึงใช้ชุดเสาริมได้';return;}
+    if(d<c.side){p.m='no';p.why=`ชิดรั้ว ${d.toFixed(2)} ม. < ระยะเสาริมขั้นต่ำ ${c.side} ม.`;return;}
+    p.m='side';p.why=`ห่างรั้ว ${d.toFixed(2)} ม. — กลางเครื่องเข้าไม่ได้ ใช้ชุดเสาริม`;
+    if(vN)p.my=p.y+(halfY+0.5);else p.mx=p.x+(halfX+0.5);
+    // ensure other fence still ok for machine body
+    if(g.fx!==null&&p.mx-halfX<g.fx+0.1){p.m='no';p.why='ตัวเครื่องชนรั้วอีกด้าน';}
+    if(g.fy!==null&&p.my-halfY<g.fy+0.1){p.m='no';p.why='ตัวเครื่องชนรั้วอีกด้าน';}
+  });
+}
+/* ---------- ordering ---------- */
+function rows(arr,key,tol){const s=[...arr].sort((a,b)=>a[key]-b[key]);const out=[];s.forEach(p=>{const l=out[out.length-1];if(l&&Math.abs(l[0][key]-p[key])<tol)l.push(p);else out.push([p]);});return out;}
+function snake(arr,rowKey,alongKey,rev){let rs=rows(arr,rowKey,0.5);if(rev)rs.reverse();const o=[];rs.forEach((r,i)=>{r.sort((a,b)=>a[alongKey]-b[alongKey]);if(i%2)r.reverse();o.push(...r);});return o;}
+function order(c,g,pat){
+  const ok=P.filter(p=>p.m!=='no');
+  if(pat==='snakeX')return snake(ok,'y','x',true).reverse().reverse();
+  if(pat==='snakeY')return snake(ok,'x','y',true);
+  if(pat==='fence'){
+    if(g.fy===null&&g.fx===null)return snake(ok,'y','x',false);
+    if(g.fy!==null)return snake(ok,'y','x',false); // north fence: rows nearest north first
+    return snake(ok,'x','y',false);}
+  if(pat==='center'){const cx=(g.maxX)/2,cy=(g.maxY)/2;return [...ok].sort((a,b)=>{const ra=Math.max(Math.abs(a.x-cx),Math.abs(a.y-cy)),rb=Math.max(Math.abs(b.x-cx),Math.abs(b.y-cy));if(Math.abs(ra-rb)>0.3)return ra-rb;return Math.atan2(a.y-cy,a.x-cx)-Math.atan2(b.y-cy,b.x-cx);});}
+  if(pat==='nearest'){const left=new Set(ok);const o=[];let cur={mx:g.entry.x,my:g.entry.y};
+    while(left.size){let best=null,bt=1e18;for(const p of left){const t=legCost(c,cur,p).t;if(t<bt){bt=t;best=p;}}o.push(best);left.delete(best);cur=best;}return o;}
+  if(pat==='random'){const a=[...ok];let s=7;for(let i=a.length-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor(s/233280*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  if(pat==='manual')return manual.map(i=>P[i]).filter(p=>p&&p.m!=='no');
+  return ok;
+}
+function legCost(c,a,b){const dx=b.mx-a.mx,dy=b.my-a.my;const dl=c.head==='X'?dx:dy,dt=c.head==='X'?dy:dx;
+  const nl=Math.abs(dl)<0.05?0:Math.ceil(Math.abs(dl)/c.sL-1e-9),ns=Math.abs(dt)<0.05?0:Math.ceil(Math.abs(dt)/c.sS-1e-9);
+  return {dl,dt,nl,ns,t:nl*c.tL+ns*c.tS,d:Math.abs(dl)+Math.abs(dt)};}
+/* ---------- footprint & conflicts ---------- */
+function boats(c,mx,my){ // rects in world coords
+  const L=c.L,W=c.W,r=[];
+  const lb=[[-L/2,W/2-0.9,L,0.9],[-L/2,-W/2,L,0.9]];const sb=[[-L*0.27-0.45,-W*0.33,0.9,W*0.66],[L*0.27-0.45,-W*0.33,0.9,W*0.66]];
+  [...lb.map(a=>[...a,'l']),...sb.map(a=>[...a,'s'])].forEach(([x,y,w,h,k])=>{if(c.head==='X')r.push({x:mx+x,y:my+y,w,h,k});else r.push({x:mx+y,y:my+x,w:h,h:w,k});});
+  return r;}
+function hits(c,mx,my,pressed,skip){const out=[];const R=boats(c,mx,my);for(const p of pressed){if(p===skip)continue;for(const b of R){if(p.x>b.x-0.15&&p.x<b.x+b.w+0.15&&p.y>b.y-0.15&&p.y<b.y+b.h+0.15){out.push(p);break;}}}return out;}
+function simulate(c,g,ord){
+  const legs=[];let cur={mx:g.entry.x,my:g.entry.y,x:null};const pressed=[];let over=0,dist=0,nl=0,ns=0,tw=0;const overSet=new Set();
+  ord.forEach((p,i)=>{const lc=legCost(c,cur,p);
+    // path: longitudinal first then lateral; sample
+    const pts=[];const steps=Math.max(1,Math.ceil(lc.d/0.5));
+    const mid=c.head==='X'?{mx:p.mx,my:cur.my}:{mx:cur.mx,my:p.my};
+    const L1=Math.hypot(mid.mx-cur.mx,mid.my-cur.my),L2=Math.hypot(p.mx-mid.mx,p.my-mid.my);
+    for(let s=0;s<=steps;s++){const u=s/steps*(L1+L2);let q;if(u<=L1){const k=L1?u/L1:1;q={mx:cur.mx+(mid.mx-cur.mx)*k,my:cur.my+(mid.my-cur.my)*k};}else{const k=L2?(u-L1)/L2:1;q={mx:mid.mx+(p.mx-mid.mx)*k,my:mid.my+(p.my-mid.my)*k};}pts.push(q);}
+    const legHits=new Set();const segD=(px,py,ax,ay,bx,by)=>{const vx=bx-ax,vy=by-ay,l2=vx*vx+vy*vy;let t=l2?((px-ax)*vx+(py-ay)*vy)/l2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-ax-t*vx,py-ay-t*vy);};
+    if(lc.d>0.05)pressed.forEach(q=>{if(segD(q.x,q.y,cur.mx,cur.my,mid.mx,mid.my)<0.9||segD(q.x,q.y,mid.mx,mid.my,p.mx,p.my)<0.9){if(q!==cur&&Math.hypot(q.x-p.x,q.y-p.y)>0.5&&Math.hypot(q.x-cur.mx,q.y-cur.my)>1.0)legHits.add(q);}});
+    over+=legHits.size;legHits.forEach(h=>overSet.add(h.id));
+    legs.push({p,from:{...cur},mid,lc,hits:[...legHits]});
+    dist+=lc.d;nl+=lc.nl;ns+=lc.ns;tw+=lc.t;pressed.push(p);cur=p;});
+  return {legs,over,overSet,dist,nl,ns,tw};}
+/* ---------- render ---------- */
+const SV=$('#plan');let VB,G,C0,simRes;
+function rebuild(keepManual){
+  const c=cfg();C0=c;$('#gapV').textContent=c.gap.toFixed(1);
+  P=layout(c.layout);G=geom(c);methods(c,G);
+  if(!keepManual)manual=[];
+  ORDER=order(c,G,c.pat);simRes=simulate(c,G,ORDER);
+  const pad=Math.max(c.L,c.W)*0.6+1;const x0=Math.min(G.minX,(G.fx??0))-pad,y0=Math.min(G.minY,(G.fy??0))-pad,x1=G.entry.x+3,y1=G.entry.y+3;
+  VB={x0,y0,w:x1-x0,h:y1-y0};SV.setAttribute('viewBox',`${x0} ${y0} ${VB.w} ${VB.h}`);
+  anim={i:-1,u:0,run:false,phase:'idle',t:0};
+  renderMoves();draw();stats();compare();
+  const nNo=P.filter(p=>p.m==='no').length;
+  msg(c.pat==='manual'?'โหมดกำหนดเอง: คลิกจุดเสาตามลำดับที่ต้องการกด แล้วกด ▶':nNo?`⚠️ มี ${nNo} จุดที่กดตามแผนนี้ไม่ได้ (จุดสีแดง) — คลิกที่จุดเพื่อดูเหตุผล ลองเปลี่ยนแนวเครื่องหรือดูหัวข้อ “กรณีติดรั้ว”`:'กด ▶ เพื่อดูรถเดินกดทีละต้น',nNo?'red':'');
+}
+function msg(t,cls){const m=$('#pMsg');m.innerHTML=t;m.className='callout'+(cls?' '+cls:'');}
+function draw(){
+  SV.innerHTML='';const c=C0,g=G;const s=VB.w/100;
+  // grid
+  for(let x=Math.ceil(VB.x0/5)*5;x<VB.x0+VB.w;x+=5)el('line',{x1:x,x2:x,y1:VB.y0,y2:VB.y0+VB.h,stroke:'#f0ece2','stroke-width':s*0.15},SV);
+  for(let y=Math.ceil(VB.y0/5)*5;y<VB.y0+VB.h;y+=5)el('line',{y1:y,y2:y,x1:VB.x0,x2:VB.x0+VB.w,stroke:'#f0ece2','stroke-width':s*0.15},SV);
+  // neighbor zones & fence
+  if(g.fy!==null){el('rect',{x:VB.x0,y:VB.y0,width:VB.w,height:g.fy-VB.y0,fill:'#efe9dc'},SV);el('text',{x:VB.x0+s*2,y:g.fy-s*2,'font-size':s*2.6,fill:C.muted},SV).textContent='🏠 บ้านเพื่อนบ้าน';
+    el('line',{x1:VB.x0,x2:VB.x0+VB.w,y1:g.fy,y2:g.fy,stroke:C.red,'stroke-width':s*0.6,'stroke-dasharray':`${s*1.5} ${s*0.8}`},SV);}
+  if(g.fx!==null){el('rect',{x:VB.x0,y:VB.y0,width:g.fx-VB.x0,height:VB.h,fill:'#efe9dc'},SV);
+    el('line',{y1:VB.y0,y2:VB.y0+VB.h,x1:g.fx,x2:g.fx,stroke:C.red,'stroke-width':s*0.6,'stroke-dasharray':`${s*1.5} ${s*0.8}`},SV);
+    if(g.fy===null)el('text',{x:VB.x0+s,y:VB.y0+s*4,'font-size':s*2.6,fill:C.muted},SV).textContent='🏠';}
+  // entry
+  el('text',{x:g.entry.x,y:g.entry.y+s*4,'font-size':s*3.2,'text-anchor':'middle'},SV).textContent='🚪';
+  // route path (done portion solid, rest dashed)
+  const legs=simRes.legs;const doneN=anim.i+ (anim.phase==='press'||anim.phase==='done'?1:0);
+  if(legs.length){let d='';legs.forEach((L,i)=>{d+=(i?'L':'M')+L.from.mx.toFixed(2)+' '+L.from.my.toFixed(2)+'L'+L.mid.mx.toFixed(2)+' '+L.mid.my.toFixed(2)+'L'+L.p.mx.toFixed(2)+' '+L.p.my.toFixed(2);});
+    el('path',{d,fill:'none',stroke:'#9fb3c8','stroke-width':s*0.35,'stroke-dasharray':`${s} ${s*0.7}`},SV);}
+  let d2='';for(let i=0;i<=Math.min(anim.i,legs.length-1);i++){const L=legs[i];d2+=(i?'L':'M')+L.from.mx+' '+L.from.my+'L'+L.mid.mx+' '+L.mid.my+'L'+L.p.mx+' '+L.p.my;}
+  if(d2)el('path',{d:d2,fill:'none',stroke:C.blue,'stroke-width':s*0.5},SV);
+  // piles
+  const pressed=new Set(legs.slice(0,doneN).map(L=>L.p.id));const ordIdx=new Map(ORDER.map((p,i)=>[p.id,i+1]));
+  const curHits=new Set();if(anim.i>=0&&anim.i<legs.length&&anim.phase!=='done')legs[anim.i].hits.forEach(h=>curHits.add(h.id));
+  P.forEach(p=>{const pr=pressed.has(p.id);let fill=pr?(p.m==='center'?C.ink:C.orange):(p.m==='no'?C.red:'#cfd5dc');
+    const r=s*(P.length>100?0.55:0.75);
+    const cc=el('circle',{cx:p.x,cy:p.y,r,fill,stroke:p.m==='no'?C.red:(p.m!=='center'&&!pr?C.orange:'#8e9cab'),'stroke-width':s*(p.m!=='center'?0.35:0.15),style:'cursor:pointer'},SV);
+    if(curHits.has(p.id))el('circle',{cx:p.x,cy:p.y,r:r*1.9,fill:'none',stroke:C.yellow,'stroke-width':s*0.5},SV);
+    cc.addEventListener('click',()=>clickPile(p));
+    if(C0.pat==='manual'&&ordIdx.has(p.id))el('text',{x:p.x,y:p.y-r*1.4,'font-size':s*1.6,'text-anchor':'middle',fill:C.blue},SV).textContent=ordIdx.get(p.id);
+  });
+  // order numbers for first few & sample
+  if(C0.pat!=='manual'&&$('#pFoot').checked&&anim.i<0){ORDER.slice(0,6).forEach((p,i)=>el('text',{x:p.x,y:p.y-s*1.3,'font-size':s*1.9,'text-anchor':'middle',fill:C.blue,'font-weight':700},SV).textContent=i+1);}
+  // machine
+  let mp=null;
+  if(anim.i<0)mp={mx:g.entry.x,my:g.entry.y};
+  else if(anim.i<legs.length){const L=legs[anim.i];if(anim.phase==='walk'){const L1=Math.hypot(L.mid.mx-L.from.mx,L.mid.my-L.from.my),L2=Math.hypot(L.p.mx-L.mid.mx,L.p.my-L.mid.my);const u=anim.u*(L1+L2);
+      if(u<=L1){const k=L1?u/L1:1;mp={mx:L.from.mx+(L.mid.mx-L.from.mx)*k,my:L.from.my+(L.mid.my-L.from.my)*k};}else{const k=L2?(u-L1)/L2:1;mp={mx:L.mid.mx+(L.p.mx-L.mid.mx)*k,my:L.mid.my+(L.p.my-L.mid.my)*k};}}
+    else mp={mx:L.p.mx,my:L.p.my};}
+  else{const L=legs[legs.length-1];mp=L?{mx:L.p.mx,my:L.p.my}:{mx:g.entry.x,my:g.entry.y};}
+  if($('#pFoot').checked&&mp)machine(mp,anim.i>=0&&anim.i<legs.length?legs[anim.i].p:null);
+}
+function machine(mp,target){
+  const c=C0,s=VB.w/100;const gm=el('g',{opacity:.92},SV);
+  const bw=c.head==='X'?c.L*0.86:c.W*0.72,bh=c.head==='X'?c.W*0.72:c.L*0.86;
+  boats(c,mp.mx,mp.my).forEach(b=>el('rect',{x:b.x,y:b.y,width:b.w,height:b.h,rx:s*0.3,fill:b.k==='l'?C.dark:C.brown,opacity:anim.phase==='walk'?0.75:0.95},gm));
+  el('rect',{x:mp.mx-bw/2,y:mp.my-bh/2,width:bw,height:bh,rx:s*0.6,fill:'rgba(95,113,132,.45)',stroke:C.ink,'stroke-width':s*0.25},gm);
+  el('rect',{x:mp.mx-s*1.2,y:mp.my-s*1.2,width:s*2.4,height:s*2.4,fill:C.orange,stroke:C.ink,'stroke-width':s*0.15},gm);
+  if(target&&target.m!=='center'&&anim.phase!=='walk'){el('rect',{x:target.x-s*1.1,y:target.y-s*1.1,width:s*2.2,height:s*2.2,fill:'#d07a3a',stroke:C.ink,'stroke-width':s*0.15},gm);
+    el('line',{x1:mp.mx,y1:mp.my,x2:target.x,y2:target.y,stroke:C.orange,'stroke-width':s*0.35,'stroke-dasharray':`${s*0.6} ${s*0.4}`},gm);}
+  // crane reach
+  el('circle',{cx:mp.mx,cy:mp.my,r:Math.max(c.L,c.W)*0.9,fill:'none',stroke:'#f2b705','stroke-width':s*0.2,'stroke-dasharray':`${s} ${s}`,opacity:.7},gm);
+}
+function dirText(c,lc){const out=[];
+  if(lc.nl){const fw=lc.dl>0;out.push(`<span class="dir">${c.head==='X'?(fw?'➡':'⬅'):(fw?'⬇':'⬆')}</span>${fw?'เดินหน้า':'ถอยหลัง'} ${lc.nl} ก้าว (${Math.abs(lc.dl).toFixed(1)} ม.)`);}
+  if(lc.ns){const pos=lc.dt>0;out.push(`<span class="dir">${c.head==='X'?(pos?'⬇':'⬆'):(pos?'➡':'⬅')}</span>เดิน${pos?'ขวา':'ซ้าย'} ${lc.ns} ก้าว (${Math.abs(lc.dt).toFixed(1)} ม.)`);}
+  return out.join(' · ')||'อยู่ตำแหน่งเดิม (ปรับเล็กน้อย)';}
+function renderMoves(){const c=C0;const box=$('#moves');
+  box.innerHTML=simRes.legs.map((L,i)=>`<div data-i="${i}"><b>ต้นที่ ${i+1}</b>${L.p.m!=='center'?' <span style="color:var(--orange)">['+(L.p.m==='side'?'เสาริม':'เสามุม')+']</span>':''} — ${dirText(c,L.lc)}${L.hits.length?` <span style="color:var(--orange)">· ข้ามเสาที่กดแล้ว ${L.hits.length}</span>`:''}</div>`).join('')||'<div>ยังไม่มีลำดับ</div>';}
+function hl(i){$$('#moves div').forEach(d=>d.classList.toggle('on',+d.dataset.i===i));const d=$(`#moves div[data-i="${i}"]`);if(d){const b=$('#moves');b.scrollTop=d.offsetTop-b.offsetTop-60;}}
+function stats(partial){
+  const c=C0,legs=simRes.legs;const n=partial===undefined?legs.length:partial;const sub=legs.slice(0,n);
+  const dist=sub.reduce((a,L)=>a+L.lc.d,0),nl=sub.reduce((a,L)=>a+L.lc.nl,0),ns=sub.reduce((a,L)=>a+L.lc.ns,0),tw=sub.reduce((a,L)=>a+L.lc.t,0),ov=sub.reduce((a,L)=>a+L.hits.length,0);
+  $('#kDone').textContent=`${n} / ${P.length}`;$('#kDist').textContent=fmt(dist,0)+' ม.';$('#kLong').textContent=fmt(nl);$('#kShort').textContent=fmt(ns);
+  $('#kWalk').textContent=fmt(tw/3600,1)+' ชม.';
+  const tot=simRes.tw/3600+legs.length*c.tP/60;$('#kAll').textContent=fmt(tot/8,1)+' วัน';$('#kAll2').textContent=`(วันละ 8 ชม. · เดินคิดเป็น ${fmt(simRes.tw/3600/tot*100,0)}%)`;
+  $('#kOver').textContent=fmt(ov);
+  $('#kSide').textContent=`${P.filter(p=>p.m==='side'||p.m==='corner').length} · ${P.filter(p=>p.m==='no').length}`;
+  const perDay=legs.length/(tot/8||1);const trips=Math.ceil(perDay*2/11);
+  $('#truckMsg').innerHTML=`ตามแผนที่เลือกด้านบน: กดได้ราว <b>${fmt(perDay,0)} ต้น/วัน</b> ถ้าเสายาว 2 ท่อน/ต้น และรถขนได้ 11 ท่อน/เที่ยว (เสา I-26 ยาว 12 ม. รถ 15 ตัน) → ต้องส่งประมาณ <b>${trips} เที่ยว/วัน</b>`;
+}
+function compare(){
+  const c=C0;const pats=[['snakeX','เลื้อยงูตามแถวนอน ↔ (เริ่มฝั่งทางเข้า)'],['snakeY','เลื้อยงูตามแถวตั้ง ↕ (เริ่มฝั่งทางเข้า)'],['fence','เริ่มจากฝั่งรั้ว แล้วไล่ออก'],['center','จากกลางออกสู่ขอบ'],['nearest','ใกล้สุดก่อน'],['random','สุ่ม (ไม่มีแผน)']];
+  const res=pats.map(([k,n])=>{const o=order(c,G,k);const r=simulate(c,G,o);
+    let fenceFirst='–';if(G.fy!==null||G.fx!==null){const firstQ=o.slice(0,Math.ceil(o.length*0.2));const dist=p=>Math.min(G.fy!==null?p.y-G.fy:1e9,G.fx!==null?p.x-G.fx:1e9);const avgF=firstQ.reduce((a,p)=>a+dist(p),0)/firstQ.length,avgA=o.reduce((a,p)=>a+dist(p),0)/o.length;fenceFirst=avgF<avgA*0.6?'✓ ใช่':'✗ ไม่';}
+    return {k,n,...r,fenceFirst};});
+  const best=Math.min(...res.map(r=>r.tw));
+  $('#cmp').innerHTML=res.map(r=>`<tr class="${r.tw===best?'best':''}"><td>${r.n}${r.k===c.pat?' ◀':''}</td><td>${fmt(r.dist)}</td><td>${fmt(r.nl)}</td><td>${fmt(r.ns)}</td><td>${fmt(r.tw/3600,1)}</td><td>${fmt(r.over)}</td><td>${r.fenceFirst}</td></tr>`).join('');
+  const sx=res.find(r=>r.k==='snakeX'),sy=res.find(r=>r.k==='snakeY');
+  const along=c.head==='X'?sx:sy,cross=c.head==='X'?sy:sx;
+  $('#cmpNote').innerHTML=`เลื้อยงู “ตามแนวเครื่อง” ใช้เวลาเดิน ${fmt(along.tw/3600,1)} ชม. ส่วนเลื้อยงู “ขวางแนวเครื่อง” ใช้ ${fmt(cross.tw/3600,1)} ชม. (${fmt(cross.tw/Math.max(1,along.tw),1)} เท่า) เพราะต้องใช้ช็อตบูทที่ก้าวสั้นกว่า · รูปแบบ “ใกล้สุดก่อน” ประหยัดเวลา แต่ไม่ได้คำนึงถึงรั้ว/การอัดดิน — เมื่อติดเพื่อนบ้านให้ความปลอดภัยมาก่อนความเร็ว`;
+}
+function clickPile(p){
+  if(C0.pat==='manual'){if(p.m==='no'){msg('จุดนี้กดไม่ได้: '+p.why,'red');return;}const k=manual.indexOf(p.id);if(k>=0)manual.splice(k,1);else manual.push(p.id);
+    ORDER=order(C0,G,'manual');simRes=simulate(C0,G,ORDER);anim={i:-1,u:0,run:false,phase:'idle',t:0};renderMoves();draw();stats();msg(`เลือกแล้ว ${manual.length} จุด — คลิกจุดเดิมซ้ำเพื่อเอาออก`,'');return;}
+  const i=ORDER.indexOf(p);const dN=G.fy!==null?(p.y-G.fy).toFixed(2)+' ม.':'–',dW=G.fx!==null?(p.x-G.fx).toFixed(2)+' ม.':'–';
+  msg(`<b>เสาเข็มจุด #${p.id+1}</b> · ลำดับกด: ${i>=0?i+1:'—'} · ห่างรั้วบน ${dN} · ห่างรั้วซ้าย ${dW}<br>วิธีกด: <b>${{center:'กลางเครื่อง',side:'ชุดกดเสาริม',corner:'ชุดกดเสามุม',no:'กดไม่ได้'}[p.m]}</b>${p.why?' — '+p.why:''}`,p.m==='no'?'red':(p.m==='center'?'':'blue'));
+}
+/* ---------- animation ---------- */
+let lt=0;
+function tick(ts){if(!anim.run){lt=0;return;}const dt=lt?Math.min(0.1,(ts-lt)/1000):0;lt=ts;const spd=+$('#pSpd').value;advance(dt*spd);draw();if(anim.run)requestAnimationFrame(tick);}
+function advance(dt){const legs=simRes.legs;if(!legs.length){anim.run=false;return;}
+  if(anim.i<0){anim.i=0;anim.phase='walk';anim.u=0;startLeg();}
+  const L=legs[anim.i];
+  if(anim.phase==='walk'){const dur=Math.max(0.4,L.lc.t/60);anim.u+=dt/dur;if(anim.u>=1){anim.u=1;anim.phase='press';anim.t=0;}}
+  else if(anim.phase==='press'){anim.t+=dt;if(anim.t>=0.6){stats(anim.i+1);if(anim.i<legs.length-1){anim.i++;anim.phase='walk';anim.u=0;startLeg();}else{anim.phase='done';anim.run=false;$('#bPlay').textContent='▶ เล่น';finishMsg();}}}
+}
+function startLeg(){const L=simRes.legs[anim.i];hl(anim.i);
+  const extra=L.p.m!=='center'?` · <b style="color:var(--orange)">${L.p.m==='side'?'ใช้ชุดเสาริม':'ใช้ชุดเสามุม'}</b> (${L.p.why})`:'';
+  msg(`ต้นที่ ${anim.i+1}: ${dirText(C0,L.lc)}${extra}${L.hits.length?`<br>⚠️ ต้องเดินย้อนข้ามเสาที่กดแล้ว ${L.hits.length} ต้น`:''}`,L.hits.length?'red':'');}
+function finishMsg(){const r=simRes;msg(`✅ กดครบ ${r.legs.length} ต้น · เดินรวม ${fmt(r.dist)} ม. · ลองบูท ${fmt(r.nl)} ก้าว · ช็อตบูท ${fmt(r.ns)} ก้าว · เดินย้อนข้ามเสาที่กดแล้ว ${fmt(r.over)} ครั้ง — ดูตารางเปรียบเทียบด้านล่าง`,r.over>P.length*0.3?'red':'green');}
+$('#bPlay').onclick=()=>{if(anim.phase==='done'){anim={i:-1,u:0,run:false,phase:'idle',t:0};stats(0);}anim.run=!anim.run;$('#bPlay').textContent=anim.run?'⏸ หยุด':'▶ เล่น';if(anim.run)requestAnimationFrame(tick);};
+$('#bStep').onclick=()=>{anim.run=false;$('#bPlay').textContent='▶ เล่น';const legs=simRes.legs;if(!legs.length)return;
+  if(anim.phase==='done'){anim={i:-1,u:0,run:false,phase:'idle',t:0};}
+  if(anim.i<0){anim.i=0;}else if(anim.phase==='press'||anim.phase==='walk'&&anim.u>=1){if(anim.i<legs.length-1)anim.i++;else{anim.phase='done';finishMsg();draw();return;}}
+  anim.phase='press';anim.u=1;anim.t=0;startLeg();stats(anim.i+1);draw();};
+$('#bEnd').onclick=()=>{anim.run=false;$('#bPlay').textContent='▶ เล่น';anim.i=simRes.legs.length-1;anim.phase='done';stats();draw();hl(anim.i);finishMsg();};
+$('#bReset').onclick=()=>{rebuild(true);stats(0);};
+['#pLayout','#pFence','#pHead','#pPat','#mL','#mW','#sL','#tL','#sS','#tS','#tP','#mSide','#mCorner'].forEach(s=>$(s).addEventListener('change',()=>{rebuild(s!=='#pLayout');stats(0);}));
+$('#pGap').addEventListener('input',()=>{rebuild(true);stats(0);});
+$('#pFoot').addEventListener('change',draw);
+rebuild();stats(0);
+
+/* ---------- FENCE DETAIL ---------- */
+function fenceDraw(){
+  const d=+$('#fd').value,type=$('#fType').value,c=cfg();$('#fdV').textContent=d.toFixed(2);
+  const S=$('#fenceSvg');S.innerHTML='';const sc=30,ox=150,oy=40; // fence at x=ox (vertical line), pile at ox+d*sc
+  const W=c.W,L=c.L;const half=W/2,need=half+c.clr;
+  let method,col;
+  if(type==='side'){if(d>=need){method='center';}else if(d>=c.side){method='side';}else method='no';}
+  else{if(d>=need)method='center';else if(d>=c.corner)method='corner';else method='no';}
+  // neighbor
+  el('rect',{x:0,y:0,width:ox,height:420,fill:'#efe9dc'},S);el('text',{x:ox/2,y:type==='corner'?100:40,'font-size':16,'text-anchor':'middle',fill:C.muted},S).textContent='🏠 เพื่อนบ้าน';
+  if(type==='corner'){el('rect',{x:0,y:0,width:760,height:oy,fill:'#efe9dc'},S);el('line',{x1:ox,x2:760,y1:oy,y2:oy,stroke:C.red,'stroke-width':4,'stroke-dasharray':'10 6'},S);}
+  el('line',{x1:ox,x2:ox,y1:type==='corner'?oy:0,y2:420,stroke:C.red,'stroke-width':4,'stroke-dasharray':'10 6'},S);
+  el('text',{x:ox-6,y:405,'font-size':13,'text-anchor':'end',fill:C.red},S).textContent='แนวรั้ว';
+  const py=type==='corner'?oy+d*sc:210,px=ox+d*sc;
+  // machine position (machine long axis vertical, parallel to fence)
+  let mx,my;if(method==='center'){mx=px;my=py;}else if(method==='side'){mx=px+(half+0.5)*sc;my=py;}else if(method==='corner'){mx=px+(half+0.5)*sc;my=py+(L/2-0.6)*sc;}else{mx=ox+(need)*sc;my=py;}
+  const g=el('g',{opacity:method==='no'?0.45:1},S);
+  const bw=W*sc,bl=L*sc;
+  // long boats (vertical)
+  [[-half,0.9],[half-0.9,0.9]].forEach(([x,w])=>el('rect',{x:mx+x*sc,y:my-bl/2,width:w*sc,height:bl,rx:4,fill:C.dark},g));
+  [[-L*0.27],[L*0.27]].forEach(([y])=>el('rect',{x:mx-W*0.33*sc,y:my+y*sc-0.45*sc,width:W*0.66*sc,height:0.9*sc,fill:C.brown},g));
+  el('rect',{x:mx-bw*0.36,y:my-bl*0.43,width:bw*0.72,height:bl*0.86,rx:8,fill:'rgba(95,113,132,.45)',stroke:C.ink,'stroke-width':2},g);
+  el('rect',{x:mx-14,y:my-14,width:28,height:28,fill:C.orange,stroke:C.ink},g);
+  if(method==='side'||method==='corner'){el('rect',{x:px-13,y:py-13,width:26,height:26,fill:'#d07a3a',stroke:C.ink,'stroke-width':2},g);el('line',{x1:mx-bw*0.36,y1:py,x2:px+13,y2:py,stroke:C.ink,'stroke-width':4},g);}
+  // pile
+  el('circle',{cx:px,cy:py,r:9,fill:method==='no'?C.red:C.ink},S);
+  // dimension
+  el('line',{x1:ox,x2:px,y1:py+40,y2:py+40,stroke:C.blue,'stroke-width':2},S);el('text',{x:(ox+px)/2,y:py+60,'font-size':14,'text-anchor':'middle',fill:C.blue,'font-weight':700},S).textContent=d.toFixed(2)+' ม.';
+  // collision indicator
+  if(method==='no'){el('text',{x:px+20,y:py-20,'font-size':18,fill:C.red,'font-weight':700},S).textContent='✗ ชิดเกินไป';}
+  const names={center:['✓ กดกลางเครื่องได้','green',`ระยะ ${d.toFixed(2)} ม. ≥ ครึ่งความกว้างเครื่อง (${half.toFixed(1)} ม.) + ระยะเผื่อ ${c.clr} ม. — ตั้งเครื่องคร่อมเสาได้ตามปกติ`],
+    side:['ใช้ชุดกดเสาริม (Side piling)','blue',`ชิดรั้วกว่า ${need.toFixed(1)} ม. แต่ยังไม่น้อยกว่า ${c.side} ม. — หมุนเครื่องให้ขนานรั้ว ใช้กล่องจับข้างเครื่อง ตรวจแรงกดพิกัดของชุดเสาริม (มักต่ำกว่าชุดหลัก) ว่าพอสำหรับแรงกดสุดท้าย`],
+    corner:['ใช้ชุดกดเสามุม (Corner piling)','blue',`เสาอยู่มุมรั้ว ห่างทั้งสองด้าน ≥ ${c.corner} ม. — ใช้ชุดกดเสามุมของเครื่อง (ถ้ามี) แรงกดพิกัดต่ำกว่าชุดหลัก`],
+    no:['✗ รถกดเข้าไม่ถึง','red',`ชิดรั้ว ${d.toFixed(2)} ม. น้อยกว่าระยะขั้นต่ำของ${type==='side'?'ชุดเสาริม ('+c.side+' ม.)':'ชุดเสามุม ('+c.corner+' ม.)'} — ต้องปรึกษาวิศวกรเพื่อเปลี่ยนวิธี`]}[method];
+  $('#fRes').innerHTML=`<div class="callout ${names[1]}"><b style="font-size:18px">${names[0]}</b><br>${names[2]}</div><p class="note" style="margin-top:8px">ค่าตัวอย่าง: เครื่องกว้าง ${W} ม. · เสาริมขั้นต่ำ ${c.side} ม. · เสามุมขั้นต่ำ ${c.corner} ม. (ปรับได้ที่ ⚙️ ในหัวข้อจำลอง) — ระยะจริงดูจากสเปกเครื่อง เช่น บางรุ่นระบุเสาริม 0.4–1.2 ม. และเสามุม 0.9–1.8 ม.</p>`;
+}
+['#fd','#fType'].forEach(s=>$(s).addEventListener('input',fenceDraw));['#mW','#mL','#mSide','#mCorner'].forEach(s=>$(s).addEventListener('change',fenceDraw));fenceDraw();
+})();
+</script>
+</body>
+</html>
