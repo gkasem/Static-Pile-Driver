@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รถกดเสาเข็ม (Hydraulic Static Pile Driver) — อธิบายการทำงานแบบ Interactive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --paper:#f3f0e8; --card:#fbfaf6; --ink:#1c2530; --muted:#5d6874; --line:#d8d2c3;
+  --yellow:#f2b705; --orange:#e0601b; --steel:#5f7184; --steel2:#8e9cab; --blue:#2e6bb3; --green:#2c8a57; --red:#c4372b;
+  --soft:#ece7da;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Thai",system-ui,sans-serif;font-size:16px;line-height:1.65}
+.mono{font-family:"IBM Plex Mono",monospace}
+a{color:var(--blue)}
+header.hero{background:var(--ink);color:#f3f0e8;padding:44px 20px 36px;position:relative;overflow:hidden}
+.hero .stripe{position:absolute;left:0;right:0;bottom:0;height:10px;background:repeating-linear-gradient(-45deg,var(--yellow) 0 18px,var(--ink) 18px 36px)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.hero h1{font-size:clamp(28px,4.4vw,46px);line-height:1.2;margin:6px 0 10px;font-weight:700}
+.hero .kicker{color:var(--yellow);font-weight:600;letter-spacing:.06em;font-size:14px}
+.hero p{max-width:760px;color:#cfd5dc;margin:0}
+.hero .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.hero .facts span{border:1px solid #3c4856;border-radius:999px;padding:4px 12px;font-size:14px;color:#e6e2d6}
+nav.toc{position:sticky;top:0;z-index:20;background:rgba(243,240,232,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:thin}
+nav.toc a{white-space:nowrap;text-decoration:none;color:var(--ink);font-size:14px;padding:5px 11px;border-radius:7px}
+nav.toc a:hover,nav.toc a.on{background:var(--ink);color:var(--paper)}
+section{padding:46px 0 10px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 6px;line-height:1.3}
+h2 .no{display:inline-block;background:var(--yellow);color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:.7em;padding:2px 9px;border-radius:6px;margin-right:10px;vertical-align:middle}
+.lead{color:var(--muted);max-width:820px;margin:0 0 20px}
+h3{font-size:18px;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+svg{display:block;width:100%;height:auto}
+.btn{font:inherit;font-size:14px;border:1px solid var(--ink);background:var(--card);color:var(--ink);padding:6px 14px;border-radius:8px;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.on{background:var(--yellow);border-color:var(--yellow);color:var(--ink);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+label.f{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:3px}
+select,input[type=number]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink)}
+input[type=range]{accent-color:var(--orange);width:100%}
+.note{font-size:13.5px;color:var(--muted)}
+.callout{border-left:4px solid var(--yellow);background:#fff8dd;padding:10px 14px;border-radius:0 10px 10px 0;font-size:14.5px}
+.callout.red{border-color:var(--red);background:#fbe9e6}
+.callout.blue{border-color:var(--blue);background:#e8f0fa}
+/* diagram */
+.part{cursor:pointer;transition:filter .15s,opacity .15s}
+.part:hover{filter:brightness(1.12) drop-shadow(0 0 3px rgba(224,96,27,.7))}
+.dim .part{opacity:.35}
+.dim .part.sel{opacity:1;filter:drop-shadow(0 0 4px rgba(224,96,27,.9))}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600}
+.pill{display:inline-block;background:var(--soft);border-radius:999px;padding:2px 10px;font-size:13px;margin:2px 4px 2px 0}
+#partInfo h3{font-size:20px}
+#partInfo .en{font-size:13px;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+.partlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.partlist button{font:inherit;font-size:13px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer}
+.partlist button:hover{background:var(--soft)}
+.partlist button.sel{background:var(--orange);color:#fff;border-color:var(--orange)}
+/* sim */
+.phases{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.phases span{font-size:13px;border:1px solid var(--line);border-radius:8px;padding:3px 9px;background:#fff;color:var(--muted)}
+.phases span.on{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+.readout{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.readout div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.readout b{display:block;font-family:"IBM Plex Mono",monospace;font-size:22px;line-height:1.2}
+.readout small{color:var(--muted);font-size:12px}
+.simgrid{display:grid;grid-template-columns:0.9fr 0.75fr 1.2fr;gap:14px;align-items:start}
+@media (max-width:1000px){.simgrid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.simgrid{grid-template-columns:1fr}}
+#simMsg{min-height:48px}
+table.log{width:100%;border-collapse:collapse;font-size:13px}
+table.log th,table.log td{border-bottom:1px solid var(--line);padding:3px 6px;text-align:right}
+table.log th:first-child,table.log td:first-child{text-align:left}
+.logbox{max-height:190px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;padding:7px 10px 7px 40px;position:relative;border-radius:8px;font-size:14.5px;margin-bottom:4px;background:#fff;border:1px solid var(--line)}
+.steps li::before{content:counter(s);position:absolute;left:10px;top:7px;width:22px;height:22px;border-radius:50%;background:var(--soft);font-family:"IBM Plex Mono";font-size:12px;display:flex;align-items:center;justify-content:center}
+.steps li.on{border-color:var(--orange);background:#fff1e8}
+.steps li.on::before{background:var(--orange);color:#fff}
+.steps li.done{opacity:.6}
+.flow{stroke-dasharray:10 8;animation:flow 0.7s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-18}}
+.kpi{font-family:"IBM Plex Mono";font-size:26px;font-weight:600}
+.rec input{color:var(--ink);background:#fff;font:inherit;font-size:13px;padding:2px 5px;border:1px solid var(--line);border-radius:5px}
+input[type=text],input[type=date],input[type=time]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink)}
+footer{padding:40px 0 60px;color:var(--muted);font-size:14px}
+ol.src li{margin-bottom:4px}
+.check li{margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">คู่มือภาพเคลื่อนไหว · HYDRAULIC STATIC PILE DRIVER (HSPD)</div>
+    <h1>รถกดเสาเข็ม ทำงานอย่างไร?</h1>
+    <p>รถกดเสาเข็มไม่ได้ “ตอก” เสา แต่ <b>จับเสาเข็มด้วยกล่องหนีบ แล้วใช้กระบอกไฮดรอลิกกดลงดิน</b> โดยอาศัยน้ำหนักตัวเครื่องและตุ้มถ่วงเป็นแรงต้าน จึงแทบไม่มีแรงสั่นสะเทือนและเสียงดัง คลิก ลาก และกดเล่นในแต่ละส่วนด้านล่างเพื่อดูการทำงานของแต่ละระบบ</p>
+    <div class="facts">
+      <span>⚙️ 7 ระบบหลัก</span><span>▶ จำลองการกดเสา</span><span>🦶 จำลองการเดินลองบูท/ช็อตบูท</span><span>🛢 วงจรไฮดรอลิก</span><span>🧮 เครื่องคิดแรงกด</span><span>🧊 โมเดล 3 มิติ</span><span>Ⅰ เสาเข็มตัว I</span><span>📋 แบบบันทึก & ยืนยัน 30 ตัน</span>
+    </div>
+  </div>
+  <div class="stripe"></div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#principle">หลักการ</a>
+  <a href="#parts">ส่วนประกอบ</a>
+  <a href="#m3d">3 มิติ</a>
+  <a href="#press">จำลองการกดเสา</a>
+  <a href="#ipile">เสาเข็มตัว I</a>
+  <a href="#verify">ยืนยัน 30 ตัน</a>
+  <a href="#clamp">กล่องจับเสา</a>
+  <a href="#walk">ระบบเดิน</a>
+  <a href="#hyd">ไฮดรอลิก</a>
+  <a href="#calc">คำนวณแรง</a>
+  <a href="#stop">เกณฑ์หยุดกด</a>
+  <a href="#site">หน้างาน & ขนส่ง</a>
+  <a href="#sources">แหล่งอ้างอิง</a>
+</div></nav>
+
+<main class="wrap">
+
+<!-- 1 PRINCIPLE -->
+<section id="principle">
+  <h2><span class="no">01</span>หลักการพื้นฐาน: “จับแล้วกด” ไม่ใช่ “ตอก”</h2>
+  <p class="lead">หลักการคือจับเสาเข็มให้แน่น แล้วดันลงไปโดยใช้น้ำหนักถ่วง (Kentledge) เป็นแรงต้าน แรงจะเดินเป็นวงปิดตามลูกศรด้านล่าง</p>
+  <div class="grid2">
+    <div class="card">
+      <svg viewBox="0 0 640 300" aria-label="แผนภาพการถ่ายแรง">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e0601b"/></marker>
+        <marker id="arb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2e6bb3"/></marker></defs>
+        <rect x="0" y="222" width="640" height="78" fill="#cbbf9f"/>
+        <rect x="70" y="200" width="500" height="22" fill="#5f7184"/>
+        <rect x="90" y="150" width="170" height="50" fill="#8e9cab" stroke="#1c2530"/><text x="175" y="180" text-anchor="middle" font-size="14" fill="#1c2530">ตุ้มถ่วง</text>
+        <rect x="380" y="150" width="170" height="50" fill="#8e9cab" stroke="#1c2530"/><text x="465" y="180" text-anchor="middle" font-size="14" fill="#1c2530">ตุ้มถ่วง</text>
+        <rect x="290" y="40" width="10" height="160" fill="#1c2530"/><rect x="340" y="40" width="10" height="160" fill="#1c2530"/>
+        <rect x="280" y="30" width="80" height="14" fill="#1c2530"/>
+        <rect x="300" y="60" width="12" height="60" fill="#2e6bb3"/><rect x="328" y="60" width="12" height="60" fill="#2e6bb3"/>
+        <rect x="292" y="120" width="56" height="34" rx="4" fill="#e0601b"/><text x="320" y="142" text-anchor="middle" font-size="11" fill="#fff">หนีบ</text>
+        <rect x="311" y="10" width="18" height="290" fill="#d9d4c8" stroke="#888"/>
+        <path d="M320 300 L320 300" />
+        <line x1="175" y1="120" x2="175" y2="145" stroke="#e0601b" stroke-width="3" marker-end="url(#ar)"/>
+        <text x="175" y="112" text-anchor="middle" font-size="13" fill="#e0601b">① น้ำหนัก W</text>
+        <path d="M200 210 C 240 210 270 90 296 75" fill="none" stroke="#e0601b" stroke-width="3" marker-end="url(#ar)"/>
+        <text x="225" y="100" font-size="13" fill="#e0601b">② ผ่านโครง</text>
+        <line x1="380" y1="70" x2="380" y2="140" stroke="#e0601b" stroke-width="3" marker-end="url(#ar)"/>
+        <text x="388" y="100" font-size="13" fill="#e0601b">③ กระบอกกด F</text>
+        <line x1="320" y1="232" x2="320" y2="290" stroke="#e0601b" stroke-width="3" marker-end="url(#ar)"/>
+        <text x="330" y="270" font-size="13" fill="#1c2530">④ เสาเข็มจมลง</text>
+        <line x1="600" y1="292" x2="600" y2="236" stroke="#2e6bb3" stroke-width="3" marker-end="url(#arb)"/>
+        <text x="596" y="252" text-anchor="end" font-size="13" fill="#2e6bb3">แรงต้านดิน R</text>
+      </svg>
+    </div>
+    <div class="card">
+      <h3>สมการที่ต้องจำ 3 ข้อ</h3>
+      <p style="margin:0 0 8px"><span class="mono">F = P × A × n</span><br><span class="note">แรงกด = แรงดันน้ำมัน × พื้นที่ลูกสูบ × จำนวนกระบอก</span></p>
+      <p style="margin:0 0 8px"><span class="mono">F<sub>max</sub> ≤ W<sub>เครื่อง+ตุ้มถ่วง</sub></span><br><span class="note">ถ้าดินต้านมากกว่าน้ำหนักเครื่อง ตัวเครื่องจะ “ลอย/ยก” แทนที่เสาจะลง</span></p>
+      <p style="margin:0"><span class="mono">แรงหนีบ ≥ 2 × F</span><br><span class="note">แรงหนีบด้านข้างต้องสูงพอ (อย่างน้อย ~2 เท่าแรงกด) เพื่อไม่ให้เสาลื่นในกล่องจับ</span></p>
+      <div class="callout" style="margin-top:12px">ข้อดีเด่น: ไม่มีแรงกระแทก เสียงต่ำ และ <b>เกจวัดแรงดันบอกแรงกดได้ทุกต้น</b> จึงเหมือนได้ทดสอบน้ำหนักเสาไปพร้อมกับการติดตั้ง</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 PARTS -->
+<section id="parts">
+  <h2><span class="no">02</span>ส่วนประกอบหลัก — คลิกที่ชิ้นส่วน</h2>
+  <p class="lead">ภาพด้านข้างของรถกดเสาเข็มแบบหนีบกลาง (ทั่วไปขนาด 120–360 ตัน) คลิกที่ชิ้นส่วนบนภาพหรือปุ่มด้านล่างเพื่อดูว่าทำหน้าที่อะไร</p>
+  <div class="grid2">
+    <div class="card" style="padding:10px">
+      <svg id="machine" viewBox="0 0 900 430" aria-label="ภาพด้านข้างรถกดเสาเข็ม">
+        <defs>
+          <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#b5a987" stroke-width="3"/></pattern>
+        </defs>
+        <rect x="0" y="372" width="900" height="58" fill="url(#hatch)"/>
+        <line x1="0" y1="372" x2="900" y2="372" stroke="#7a6f55" stroke-width="2"/>
+        <!-- pile below ground -->
+        <rect x="438" y="372" width="24" height="58" fill="#d9d4c8" opacity=".6"/>
+        <g class="part" data-part="longboat">
+          <rect x="100" y="348" width="700" height="24" rx="4" fill="#3d4a58"/>
+          <rect x="100" y="348" width="700" height="6" fill="#55657a"/>
+        </g>
+        <g class="part" data-part="shortboat">
+          <rect x="250" y="356" width="90" height="16" rx="3" fill="#a36a2c"/>
+          <rect x="560" y="356" width="90" height="16" rx="3" fill="#a36a2c"/>
+          <rect x="280" y="336" width="30" height="20" fill="#7d5222"/><rect x="590" y="336" width="30" height="20" fill="#7d5222"/>
+        </g>
+        <g class="part" data-part="legs">
+          <rect x="140" y="270" width="26" height="80" fill="#2e6bb3"/><rect x="146" y="300" width="14" height="50" fill="#c9d7e8"/>
+          <rect x="734" y="270" width="26" height="80" fill="#2e6bb3"/><rect x="740" y="300" width="14" height="50" fill="#c9d7e8"/>
+        </g>
+        <g class="part" data-part="body">
+          <rect x="120" y="296" width="660" height="40" fill="#5f7184" stroke="#1c2530"/>
+          <line x1="120" y1="316" x2="780" y2="316" stroke="#4b5a6a"/>
+        </g>
+        <g class="part" data-part="counterweight">
+          <g fill="#8e9cab" stroke="#1c2530">
+            <rect x="200" y="256" width="180" height="40"/><rect x="200" y="216" width="180" height="40"/><rect x="215" y="176" width="150" height="40"/>
+            <rect x="520" y="256" width="170" height="40"/><rect x="520" y="216" width="170" height="40"/><rect x="530" y="176" width="150" height="40"/>
+          </g>
+        </g>
+        <g class="part" data-part="frame">
+          <rect x="398" y="80" width="14" height="216" fill="#1c2530"/><rect x="488" y="80" width="14" height="216" fill="#1c2530"/>
+          <rect x="386" y="66" width="128" height="20" fill="#1c2530"/>
+        </g>
+        <g class="part" data-part="presscyl">
+          <rect x="416" y="86" width="16" height="96" fill="#2e6bb3"/><rect x="420" y="182" width="8" height="40" fill="#c9d7e8"/>
+          <rect x="468" y="86" width="16" height="96" fill="#2e6bb3"/><rect x="472" y="182" width="8" height="40" fill="#c9d7e8"/>
+        </g>
+        <!-- pile -->
+        <rect x="438" y="20" width="24" height="352" fill="#d9d4c8" stroke="#8a8578"/>
+        <line x1="438" y1="150" x2="462" y2="150" stroke="#8a8578" stroke-width="3"/>
+        <g class="part" data-part="clampbox">
+          <rect x="406" y="222" width="88" height="44" rx="5" fill="#e0601b" stroke="#1c2530"/>
+          <rect x="414" y="236" width="18" height="16" fill="#1c2530"/><rect x="468" y="236" width="18" height="16" fill="#1c2530"/>
+        </g>
+        <g class="part" data-part="crane">
+          <rect x="132" y="236" width="20" height="60" fill="#f2b705" stroke="#1c2530"/>
+          <line x1="142" y1="240" x2="40" y2="70" stroke="#f2b705" stroke-width="12" stroke-linecap="round"/>
+          <line x1="142" y1="240" x2="40" y2="70" stroke="#1c2530" stroke-width="1.5"/>
+          <line x1="40" y1="70" x2="40" y2="200" stroke="#1c2530" stroke-width="1.5"/>
+          <path d="M34 200 h12 v6 q-6 10 -12 0z" fill="#1c2530"/>
+        </g>
+        <g class="part" data-part="power">
+          <rect x="160" y="258" width="38" height="38" fill="#2c8a57" stroke="#1c2530"/><circle cx="179" cy="277" r="10" fill="#1f6a42"/>
+        </g>
+        <g class="part" data-part="cab">
+          <rect x="700" y="222" width="76" height="74" rx="4" fill="#f2b705" stroke="#1c2530"/>
+          <rect x="712" y="234" width="52" height="30" fill="#bcd3e6" stroke="#1c2530"/>
+        </g>
+        <g class="part" data-part="electric">
+          <rect x="694" y="270" width="18" height="26" fill="#c4372b" stroke="#1c2530"/>
+          <path d="M703 274 l-4 8 h6 l-4 8" stroke="#fff" stroke-width="2" fill="none"/>
+        </g>
+        <g class="part" data-part="sidepile">
+          <rect x="784" y="236" width="56" height="60" rx="4" fill="#d07a3a" stroke="#1c2530"/>
+          <rect x="804" y="120" width="16" height="252" fill="#d9d4c8" stroke="#8a8578"/>
+        </g>
+        <!-- labels -->
+        <g class="tag" fill="#1c2530">
+          <text x="448" y="404" text-anchor="middle">เสาเข็ม</text>
+        </g>
+      </svg>
+      <div class="partlist" id="partBtns"></div>
+    </div>
+    <div class="card" id="partInfo">
+      <h3>เลือกชิ้นส่วน</h3>
+      <p class="note">แตะที่ชิ้นส่วนบนภาพ แต่ละชิ้นจะแสดงหน้าที่ หลักการทำงาน และจุดที่ควรตรวจ</p>
+      <div class="callout blue">เครื่องแบ่งเป็น 7 ระบบ: <b>ระบบกดเสา</b> (โครงกด, กระบอกกด, กล่องจับ) · <b>ระบบเดิน</b> (ลองบูท, ช็อตบูท, ขาค้ำ) · <b>ระบบน้ำหนักถ่วง</b> · <b>ระบบยก</b> (เครน) · <b>ระบบไฮดรอลิก</b> · <b>ระบบไฟฟ้า</b> · <b>ระบบควบคุม</b> (ห้องคนขับ)</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 3D -->
+<section id="m3d">
+  <h2><span class="no">03</span>โมเดล 3 มิติ — หมุน ซูม ดูได้รอบทิศ</h2>
+  <p class="lead">ลากเพื่อหมุน · สกรอลล์หรือจีบนิ้วเพื่อซูม · คลิกขวาลาก (หรือสองนิ้ว) เพื่อเลื่อนภาพ · กด “ดูใต้ดิน” เพื่อเห็นเสาเข็มที่จมลงไป</p>
+  <div class="card" style="padding:12px">
+    <div class="row" style="margin-bottom:8px">
+      <button class="btn primary" id="b3Play">⏸ หยุด</button>
+      <label class="f" style="flex-direction:row;align-items:center;gap:6px">เสาเข็ม
+        <select id="s3Pile"><option value="I">ตัว I (I-26)</option><option value="sq">สี่เหลี่ยม 0.30</option><option value="spun">กลมกลวง (สปัน)</option></select></label>
+      <span style="flex:1"></span>
+      <button class="btn" data-cam="wide">มุมกว้าง</button>
+      <button class="btn" data-cam="clamp">ซูมกล่องจับ</button>
+      <button class="btn" data-cam="side">ด้านข้าง</button>
+      <button class="btn" data-cam="top">มุมบน</button>
+      <button class="btn" id="b3Under">ดูใต้ดิน</button>
+      <button class="btn on" id="b3Lbl">ป้ายชื่อ</button>
+    </div>
+    <div id="three" style="position:relative;height:540px;border-radius:10px;overflow:hidden;background:#e9e5da;touch-action:none"></div>
+    <div class="phases" id="phases3"><span data-ph="raise">① ยกกล่องจับ</span><span data-ph="clamp">② หนีบเสา</span><span data-ph="press">③ กดลง</span><span data-ph="release">④ คลาย</span><span data-ph="new">ตั้งเสาท่อนใหม่</span></div>
+    <p class="note" id="t3msg" style="margin:0">ความลึกปลายเสา: 0.0 ม.</p>
+  </div>
+</section>
+
+<!-- 3 PRESS SIM -->
+<section id="press">
+  <h2><span class="no">04</span>จำลองการกดเสาเข็ม 1 ต้น</h2>
+  <p class="lead">การกดเป็นรอบซ้ำ ๆ (Stroke) ทีละ ~1.8 ม.: <b>ยกกล่องจับขึ้น → หนีบ → กดลง → คลาย</b> เมื่อเสาท่อนแรกจมใกล้ระดับดินจะต่อเสาท่อนถัดไป แล้วกดต่อจนแรงถึงค่าเป้าหมายและคงแรงไว้ (ตัวเลขดินเป็นตัวอย่างประกอบการเรียนรู้ ไม่ใช่ค่าออกแบบ)</p>
+  <div class="card">
+    <div class="row" style="gap:14px;margin-bottom:10px">
+      <label class="f">ขนาดเครื่อง (แรงกดพิกัด)
+        <select id="selCap"><option value="120">120 ตัน</option><option value="180">180 ตัน</option><option value="260">260 ตัน</option><option value="360">360 ตัน</option></select></label>
+      <label class="f">ชนิด/ขนาดเสาเข็ม
+        <select id="selPile"><option value="I22">ไอ I-22</option><option value="I26" selected>ไอ I-26</option><option value="I30">ไอ I-30</option><option value="I35">ไอ I-35</option><option value="sq25">สี่เหลี่ยม 0.25</option><option value="sq30">สี่เหลี่ยม 0.30</option><option value="sq35">สี่เหลี่ยม 0.35</option><option value="sq40">สี่เหลี่ยม 0.40</option></select></label>
+      <label class="f">ชั้นดิน (ตัวอย่าง)
+        <select id="selSoil"><option value="deep">ดินเหนียวอ่อนหนา (ทรายลึก)</option><option value="shallow">ชั้นแข็งตื้น</option></select></label>
+      <label class="f">ความยาวเสา
+        <select id="selSeg"><option value="2">2 ท่อน × 12 ม.</option><option value="3">3 ท่อน × 12 ม.</option></select></label>
+      <label class="f" style="min-width:160px">น้ำหนักบรรทุกออกแบบ: <b id="dlv">30</b> ตัน
+        <input type="range" id="rngDL" min="15" max="150" value="30"></label>
+      <label class="f" style="min-width:150px">แฟกเตอร์แรงกดสุดท้าย: <b id="sfv">2.0</b>×
+        <input type="range" id="rngSF" min="15" max="30" value="20"></label>
+    </div>
+    <div class="row" style="margin-bottom:6px">
+      <button class="btn primary" id="bPlay">▶ เริ่มกด</button>
+      <button class="btn" id="bReset">↺ เริ่มใหม่</button>
+      <label class="f" style="flex-direction:row;align-items:center;gap:6px">ความเร็ว
+        <select id="selSpd"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option></select></label>
+    </div>
+    <div class="phases" id="phases">
+      <span data-ph="raise">① ยกกล่องจับ</span><span data-ph="clamp">② หนีบเสา</span><span data-ph="press">③ กดลง</span><span data-ph="release">④ คลาย</span><span data-ph="weld">ต่อเสา</span><span data-ph="hold">คงแรง</span><span data-ph="done">เสร็จ</span>
+    </div>
+    <div class="simgrid">
+      <div>
+        <div class="note" style="margin-bottom:4px">ภาพขยาย: โครงกด กระบอก และกล่องจับ</div>
+        <svg id="zoom" viewBox="0 0 300 420" style="background:#fff;border:1px solid var(--line);border-radius:10px"></svg>
+      </div>
+      <div>
+        <div class="note" style="margin-bottom:4px">ภาพตัดชั้นดิน (0–30 ม.)</div>
+        <svg id="soil" viewBox="0 0 220 470" style="background:#fff;border:1px solid var(--line);border-radius:10px"></svg>
+      </div>
+      <div>
+        <div class="readout">
+          <div><small>ความลึกปลายเสา</small><b id="oDepth">0.00 ม.</b></div>
+          <div><small>แรงกด (แรงต้านดิน)</small><b id="oForce">0.0 ตัน</b></div>
+          <div><small>แรงดันเกจ (สมมติ)</small><b id="oPress">0.0 MPa</b><small id="oBar">0 bar</small></div>
+          <div><small>เป้าหมาย / พิกัดเครื่อง</small><b id="oTarget">90 / 120</b><small>ตัน</small></div>
+        </div>
+        <svg id="gauge" viewBox="0 0 220 130" style="max-width:240px;margin:8px auto 0"></svg>
+        <div class="callout" id="simMsg" style="margin-top:6px">กด ▶ เพื่อเริ่ม</div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <div class="note">กราฟแรงกดกับความลึก (บันทึกระหว่างกด)</div>
+        <svg id="chart" viewBox="0 0 520 280" style="background:#fff;border:1px solid var(--line);border-radius:10px"></svg>
+      </div>
+      <div>
+        <div class="note">บันทึกการกด (ทุก 1 ม. — หน้างานจริงมักกำหนดทุก 0.3 ม.)</div>
+        <div class="logbox"><table class="log"><thead><tr><th>ความลึก (ม.)</th><th>แรง (ตัน)</th><th>เกจ (MPa)</th></tr></thead><tbody id="logBody"></tbody></table></div>
+        <p class="note" style="margin-top:8px">💡 สังเกต: ระบบไฮดรอลิกแบบ “กำลังคงที่” ทำให้เมื่อแรงกดสูงขึ้น ความเร็วกดจะช้าลงเอง และช่วงยกกล่องจับกลับขึ้นจะเร็วกว่าช่วงกด</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- I PILE -->
+<section id="ipile">
+  <h2><span class="no">05</span>เสาเข็มรูปตัว I (I-Pile)</h2>
+  <p class="lead">เสาเข็มคอนกรีตอัดแรงหน้าตัดตัว I มีร่องเว้าสองข้าง ทำให้ <b>ใช้คอนกรีตน้อยลง น้ำหนักเบาลง แต่เส้นรอบรูป (ผิวสัมผัสดิน) ยังมาก</b> — เหมาะกับดินที่รับแรงด้วยแรงเสียดทานผิวเป็นหลัก และขนส่ง/ยกได้ง่ายกว่าเสาตันขนาดเท่ากัน</p>
+  <div class="grid2">
+    <div class="card" style="padding:12px">
+      <div class="row" style="margin-bottom:8px">
+        <label class="f">ขนาดเสา I<select id="iSize"><option>I18</option><option>I22</option><option selected>I26</option><option>I30</option><option>I35</option><option>I40</option></select></label>
+        <label class="f">ความยาวต่อท่อน (ม.)<input type="number" id="iLen" value="12" min="2" max="24"></label>
+        <label class="f">น้ำหนักบรรทุกรถ (ตัน)<input type="number" id="iTruck" value="15" min="1" max="40"></label>
+      </div>
+      <div id="ithree" style="position:relative;height:340px;border-radius:10px;overflow:hidden;background:#f1eee6;touch-action:none"></div>
+      <p class="note" style="margin:6px 0 0">ซ้าย: เสา I · ขวา: เสาสี่เหลี่ยมตันขนาดภายนอกเท่ากัน (ลากหมุนได้)</p>
+    </div>
+    <div class="card">
+      <h3 id="iTitle">I-26 เทียบกับสี่เหลี่ยม 0.26 × 0.26 ม.</h3>
+      <table class="log" style="font-size:14px"><thead><tr><th>รายการ</th><th>ตัว I</th><th>สี่เหลี่ยมตัน</th></tr></thead><tbody id="iCmp"></tbody></table>
+      <div class="callout blue" style="margin-top:10px" id="iTruckMsg"></div>
+      <h3 style="margin-top:14px">ข้อควรรู้เมื่อกดเสา I ด้วยรถกด</h3>
+      <ul class="check" style="font-size:14.5px">
+        <li>ปีกและเอวของเสา I บางกว่าเสาตัน — ใช้แผ่นจับที่เหมาะกับหน้าตัด ให้หนีบเต็มหน้าที่ปีก และตั้งแรงหนีบไม่มากเกิน</li>
+        <li>ใช้ตาราง <b>เส้นรอบรูปและพื้นที่หน้าตัดจริงจากผู้ผลิต</b> ในการประมาณแรงต้าน และตรวจความเค้นในเสาขณะกด (แรงกด ÷ พื้นที่หน้าตัด)</li>
+        <li>รอยต่อเป็นแผ่นเหล็กหัว–ท้ายเชื่อมรอบ ตรวจแนวดิ่งทั้งสองแกน (แกนปีกและแกนเอว) ก่อนกดต่อ</li>
+        <li>เสา I ขนาดใหญ่ (I-35, I-40) หนักต่อเมตรมาก ตรวจพิกัดเครนประจำรถกดก่อนกำหนดความยาวท่อน</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>ตารางตัวอย่างเสาเข็มไอ (จากแคตตาล็อกผู้ผลิตรายหนึ่ง)</h3>
+    <div style="overflow-x:auto"><table class="log" style="font-size:14px;min-width:560px"><thead><tr><th>ขนาด</th><th>หน้าตัดภายนอก (ม.)</th><th>พื้นที่ (ซม.²)</th><th>เส้นรอบรูป (ซม.)</th><th>น้ำหนัก (กก./ม.)</th><th>น้ำหนักปลอดภัยโดยประมาณ (ตัน)</th></tr></thead><tbody id="iTable"></tbody></table></div>
+    <p class="note">น้ำหนักปลอดภัยที่เสาเข็มรับได้จริงขึ้นกับสภาพดินแต่ละที่และความยาวเสา — ตัวเลขนี้ใช้เพื่อเลือกขนาดเบื้องต้นเท่านั้น ค่าแต่ละยี่ห้อ/มาตรฐาน มอก. ต่างกันเล็กน้อย</p>
+  </div>
+</section>
+
+
+<!-- VERIFY 30T -->
+<section id="verify">
+  <h2><span class="no">06</span>ต้องการเสาเข็มรับ 30 ตัน — คำนวณ บันทึก และยืนยันอย่างไร?</h2>
+  <p class="lead">เดินตาม 4 ขั้น: <b>คำนวณ</b>ว่าต้องกดถึงแรงเท่าไหร่และเกจต้องขึ้นเท่าไหร่ → <b>บันทึก</b>ระหว่างกด → <b>ยืนยัน</b>ตามเกณฑ์หยุดกด → <b>ทดสอบเพิ่มเติม</b>บางต้นด้วย Static Load Test ทุกช่องแก้ค่าได้ ค่าตั้งต้นคือตัวอย่าง 30 ตัน</p>
+  <div class="row" style="margin-bottom:12px" id="vTabs">
+    <button class="btn on" data-vt="calc">① คำนวณ</button>
+    <button class="btn" data-vt="rec">② แบบบันทึกการกด</button>
+    <button class="btn" data-vt="conf">③ ยืนยันผล</button>
+    <button class="btn" data-vt="slt">④ Static Load Test</button>
+  </div>
+
+  <!-- CALC -->
+  <div class="vpanel" data-vp="calc">
+    <div class="grid2">
+      <div class="card">
+        <h3>ข้อมูลตั้งต้น</h3>
+        <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+          <label class="f">น้ำหนักปลอดภัยที่ต้องการ (ตัน/ต้น)<input type="number" id="vLoad" value="30" min="1"></label>
+          <label class="f">ค่าความปลอดภัย (Safety factor)<select id="vSF"><option value="2">2.0 เท่า</option><option value="2.5">2.5 เท่า</option><option value="3">3.0 เท่า</option></select></label>
+          <label class="f">ชนิดเสาเข็ม<select id="vPile"><option value="I22">ไอ I-22</option><option value="I26" selected>ไอ I-26</option><option value="I30">ไอ I-30</option><option value="I35">ไอ I-35</option><option value="sq25">สี่เหลี่ยม 0.25</option><option value="sq30">สี่เหลี่ยม 0.30</option><option value="sq35">สี่เหลี่ยม 0.35</option></select></label>
+          <label class="f">หน่วยของเกจที่รถกด<select id="vUnit"><option value="ksc">kg/cm² (ksc)</option><option value="bar">bar</option><option value="mpa">MPa</option></select></label>
+          <label class="f">Ø ลูกสูบกระบอกกด (มม.)<input type="number" id="vBore" value="200" min="50"></label>
+          <label class="f">จำนวนกระบอกกด<input type="number" id="vN" value="2" min="1" max="8"></label>
+          <label class="f">ประสิทธิภาพจากผลสอบเทียบ (%)<input type="number" id="vEff" value="100" min="50" max="110"></label>
+          <label class="f">ความลึกขั้นต่ำตามแบบ (ม.)<input type="number" id="vMinD" value="18" min="0"></label>
+          <label class="f">ชั้นดิน (ตัวอย่าง ใช้ประมาณความลึก)<select id="vSoil"><option value="deep">ดินเหนียวอ่อนหนา (ทรายลึก)</option><option value="shallow">ชั้นแข็งตื้น</option></select></label>
+          <label class="f">กำลังอัดคอนกรีตเสา f'c (ksc)<input type="number" id="vFc" value="400" min="100"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>ผลคำนวณ</h3>
+        <div class="readout">
+          <div><small>แรงกดสุดท้ายที่ต้องได้</small><b id="vF">60.0 ตัน</b></div>
+          <div><small>เกจต้องขึ้นถึง</small><b id="vG" style="color:var(--orange)">–</b></div>
+          <div><small>ความลึกที่คาดว่าจะได้ (จากดินตัวอย่าง)</small><b id="vDep">–</b></div>
+          <div><small>ความเค้นในเสาขณะกด</small><b id="vStress">–</b><small id="vStress2"></small></div>
+        </div>
+        <ol class="steps" id="vExplain" style="margin-top:12px"></ol>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>ตารางแปลงค่าเกจสำหรับติดที่ห้องคนขับ</h3>
+      <div style="overflow-x:auto"><table class="log" style="font-size:14px;min-width:480px"><thead><tr><th>% ของแรงเป้าหมาย</th><th>แรงกด (ตัน)</th><th>อ่านเกจ</th><th>ความหมาย</th></tr></thead><tbody id="vConv"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- RECORD -->
+  <div class="vpanel" data-vp="rec" hidden>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">แบบบันทึกการกดเสาเข็ม (Pile Pressing Record)</h3>
+        <div class="row"><button class="btn" id="rSample">เติมข้อมูลตัวอย่าง</button><button class="btn" id="rAdd">+ เพิ่มแถว</button><button class="btn" id="rClear">ล้าง</button><button class="btn primary" id="rCopy">คัดลอกไป Excel</button></div></div>
+      <div class="grid3" style="margin-top:12px;gap:10px">
+        <label class="f">โครงการ<input type="text" class="rh" id="rProj" value="โครงการตัวอย่าง"></label>
+        <label class="f">เลขเสา / ตำแหน่ง (Grid)<input type="text" class="rh" id="rNo" value="P-12 (B/3)"></label>
+        <label class="f">วันที่<input type="date" class="rh" id="rDate"></label>
+        <label class="f">ชนิด/ขนาดเสา<input type="text" class="rh" id="rType" readonly></label>
+        <label class="f">ความยาวเสา (ท่อน × ม.)<input type="text" class="rh" id="rLen" value="2 × 12"></label>
+        <label class="f">เครื่องกดเลขที่ / พื้นที่ลูกสูบ<input type="text" class="rh" id="rMach" readonly></label>
+        <label class="f">เวลาเริ่มกด<input type="time" class="rh" id="rT0" value="08:30"></label>
+        <label class="f">เวลาเสร็จ<input type="time" class="rh" id="rT1" value="09:05"></label>
+        <label class="f">แนวดิ่ง (ตรวจหลังตั้งเสา/ต่อเสา)<select class="rh" id="rVert"><option>ผ่าน ≤ 1:75</option><option>ไม่ผ่าน — ปรับแก้แล้ว</option></select></label>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div>
+          <div class="note">ก) บันทึกระหว่างกด — ใส่ความลึกและค่าที่อ่านจากเกจ ระบบแปลงเป็นตันให้อัตโนมัติ</div>
+          <div class="logbox" style="max-height:330px"><table class="log rec"><thead><tr><th>ความลึก (ม.)</th><th>อ่านเกจ (<span class="uLbl">ksc</span>)</th><th>แรง (ตัน)</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="rBody"></tbody></table></div>
+          <div class="note" style="margin-top:10px">ข) การคงแรงและกดซ้ำตอนท้าย (Final set)</div>
+          <div class="logbox"><table class="log rec"><thead><tr><th>รอบ</th><th>อ่านเกจ (<span class="uLbl">ksc</span>)</th><th>แรง (ตัน)</th><th>คงแรง (วินาที)</th><th>ทรุดระหว่างคง (มม.)</th></tr></thead><tbody id="hBody"></tbody></table></div>
+          <div class="row" style="margin-top:6px"><button class="btn" id="hAdd">+ เพิ่มรอบ</button></div>
+        </div>
+        <div>
+          <div class="note">กราฟแรงกด–ความลึกจากแบบบันทึก</div>
+          <svg id="rChart" viewBox="0 0 420 330" style="background:#fff;border:1px solid var(--line);border-radius:10px"></svg>
+          <div class="grid3" style="margin-top:10px;gap:8px">
+            <label class="f">ผู้ควบคุมรถกด<input type="text" class="rh" id="rOp" placeholder="ลงชื่อ"></label>
+            <label class="f">ผู้ควบคุมงาน (ผู้รับเหมา)<input type="text" class="rh" id="rSup" placeholder="ลงชื่อ"></label>
+            <label class="f">วิศวกร/ตัวแทนเจ้าของงาน<input type="text" class="rh" id="rEng" placeholder="ลงชื่อ"></label>
+          </div>
+          <textarea id="rCopyBox" style="display:none;width:100%;height:110px;margin-top:8px;font-family:'IBM Plex Mono';font-size:12px"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM -->
+  <div class="vpanel" data-vp="conf" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h3>เกณฑ์หยุดกด (ใส่ตามที่วิศวกรกำหนด)</h3>
+        <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+          <label class="f">แรงกดสุดท้าย (ตัน)<input type="number" id="cTarget" readonly></label>
+          <label class="f">ความลึกขั้นต่ำ (ม.)<input type="number" id="cMinD" readonly></label>
+          <label class="f">จำนวนรอบคงแรงขั้นต่ำ<input type="number" id="cCyc" value="2" min="1"></label>
+          <label class="f">เวลาคงแรงต่อรอบ (วินาที)<input type="number" id="cHold" value="30" min="5"></label>
+          <label class="f">ทรุดระหว่างคงแรงไม่เกิน (มม.) <span class="note">ตัวอย่าง</span><input type="number" id="cSet" value="5" step="0.5" min="0"></label>
+        </div>
+        <p class="note" style="margin-top:10px">ข้อมูลอ่านจากแบบบันทึกในแท็บ ② — ลองแก้ค่าในแบบบันทึก (เช่น ลดค่าเกจรอบสุดท้าย หรือเพิ่มระยะทรุด) แล้วกลับมาดูผล</p>
+      </div>
+      <div class="card">
+        <h3>ผลการตรวจ</h3>
+        <ul id="cList" style="list-style:none;padding:0;margin:0"></ul>
+        <div class="callout" id="cVerdict" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>ทำไม “กดได้ 60 ตัน” จึงยืนยันว่า “รับได้ 30 ตัน”?</h3>
+      <div class="grid3">
+        <div><b>1. แรงกด = แรงต้านดิน</b><p class="note">ขณะเสาจมช้า ๆ แรงจากกระบอกเท่ากับแรงที่ดินต้าน (แรงเสียดทานผิว + แรงต้านปลาย) ถ้ากดถึง 60 ตันแล้วเสาหยุดนิ่ง แปลว่าดิน ณ ขณะนั้นต้านได้อย่างน้อย 60 ตัน</p></div>
+        <div><b>2. หารด้วยค่าความปลอดภัย</b><p class="note">60 ตัน ÷ 2.0 = 30 ตัน คือน้ำหนักที่ยอมให้ใช้งาน ค่าความปลอดภัยเผื่อความไม่แน่นอนของดิน การทรุดตัว และความคลาดเคลื่อนของการวัด</p></div>
+        <div><b>3. คงแรง + กดซ้ำ</b><p class="note">การคงแรงไว้และกดซ้ำโดยเสาไม่ทรุดเพิ่มมาก ยืนยันว่าแรงต้านนั้น “ถาวร” ไม่ใช่แค่แรงต้านชั่วคราวจากความเร็วในการกด</p></div>
+      </div>
+      <div class="callout red" style="margin-top:10px">ข้อจำกัด: แรงต้านดินหลังกดอาจเพิ่มขึ้น (setup) หรือลดลง (relaxation) ตามชนิดดิน, เสาในกลุ่มอาจทรุดต่างจากเสาเดี่ยว และเกจต้องสอบเทียบจริง — ข้อกำหนดโครงการจึงมักให้สุ่มทดสอบ Static Load Test หรือ Dynamic Load Test บางต้น และทดสอบความสมบูรณ์ (Seismic Integrity Test) เพิ่มเติม</div>
+    </div>
+  </div>
+
+  <!-- SLT -->
+  <div class="vpanel" data-vp="slt" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h3>จำลอง Static Load Test (แบบเพิ่มทีละขั้น)</h3>
+        <p class="note">ตัวอย่างขั้นตอน: เพิ่มน้ำหนักทีละ 25% ของน้ำหนักออกแบบจนถึง 200% ค้างแต่ละขั้น 5 นาที บันทึกการทรุดที่ 1 และ 5 นาที ละเอียด 0.01 มม. แล้วลดทีละ 25% จนเหลือ 0 และบันทึกการคืนตัว</p>
+        <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+          <label class="f">น้ำหนักทดสอบสูงสุด<select id="sMax"><option value="200">200%</option><option value="250">250%</option><option value="300">300%</option></select></label>
+          <label class="f">ความยาวเสาที่ฝัง (ม.)<input type="number" id="sL" value="21" min="3"></label>
+          <label class="f" style="grid-column:1/3">สมมติ “กำลังประลัยจริง” ของเข็มต้นนี้: <b id="sQuV">90</b> ตัน <span class="note">(ในงานจริงไม่รู้ค่านี้ — ลองลดดูว่าผลเป็นอย่างไร)</span><input type="range" id="sQu" min="35" max="160" value="90"></label>
+        </div>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="sStep">ขั้นถัดไป ▸</button><button class="btn" id="sAll">ทำทั้งหมด</button><button class="btn" id="sReset">↺ เริ่มใหม่</button></div>
+        <div class="logbox" style="max-height:260px;margin-top:10px"><table class="log"><thead><tr><th>ขั้น</th><th>%</th><th>น้ำหนัก (ตัน)</th><th>เกจ (<span class="uLbl">ksc</span>)</th><th>ทรุด 1 นาที (มม.)</th><th>ทรุด 5 นาที (มม.)</th></tr></thead><tbody id="sBody"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="note">กราฟน้ำหนัก–การทรุดตัว (เส้นประเขียว = เส้น Davisson สำหรับตีความกำลังประลัย)</div>
+        <svg id="sChart" viewBox="0 0 440 330" style="background:#fff;border:1px solid var(--line);border-radius:10px"></svg>
+        <div class="callout" id="sMsg" style="margin-top:10px">กด “ขั้นถัดไป” เพื่อเริ่มใส่น้ำหนัก</div>
+        <p class="note">วิธีตีความมีหลายวิธี (เช่น Davisson, ระยะทรุดรวม/ทรุดถาวรที่ยอมให้) เกณฑ์ผ่านกำหนดโดยวิศวกรในข้อกำหนดโครงการ · ทางเลือกอื่น: Dynamic Load Test (ตอกด้วยตุ้มแล้ววัดคลื่น) ทำได้เร็วกว่าและไม่ต้องใช้น้ำหนักถ่วง</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 CLAMP -->
+<section id="clamp">
+  <h2><span class="no">07</span>กล่องจับเสาเข็ม (Clamping Box)</h2>
+  <p class="lead">กล่องจับคือ “มือ” ของเครื่อง ด้านหนึ่งเป็นแผ่นจับแบบตาย (Passive) อีกด้านเป็นแผ่นจับที่กระบอกไฮดรอลิกแนวนอนดันเข้า (Active) แรงกดลงถ่ายเข้าเสาผ่าน <b>แรงเสียดทาน</b>ที่ผิวสัมผัส</p>
+  <div class="grid2">
+    <div class="card">
+      <svg id="clampSvg" viewBox="0 0 420 260"></svg>
+      <div class="row" style="margin-top:8px"><button class="btn primary" id="bClamp">หนีบ / คลาย</button>
+      <label class="f" style="flex-direction:row;align-items:center;gap:6px">รูปเสา <select id="selShape"><option value="sq">สี่เหลี่ยม</option><option value="rd">กลม (สปัน)</option></select></label></div>
+    </div>
+    <div class="card">
+      <label class="f">แรงกดลง F: <b id="cfv">100</b> ตัน<input type="range" id="rngCF" min="10" max="360" value="100"></label>
+      <label class="f" style="margin-top:8px">สัมประสิทธิ์แรงเสียดทาน μ (แผ่นจับ–คอนกรีต): <b id="muv">0.25</b><input type="range" id="rngMu" min="15" max="50" value="25"></label>
+      <div style="margin-top:12px">
+        <div class="note">แรงหนีบต่อด้านที่ต้องการขั้นต่ำ <span class="mono">N ≥ F / (2μ)</span> (ผิวสัมผัส 2 ด้าน)</div>
+        <div class="kpi" id="cN">200 ตัน</div>
+        <div class="note" id="cRatio">= 2.0 เท่าของแรงกด</div>
+      </div>
+      <div class="callout red" style="margin-top:12px"><b>หนีบน้อยไป</b> → เสาลื่น เกิดรอยครูด แรงที่เกจอ่านได้ไม่ใช่แรงที่ลงเสาจริง<br><b>หนีบมากไป / แผ่นจับไม่เต็มหน้า</b> → คอนกรีตผิวเสาแตก ร้าว โดยเฉพาะเสาสปันผนังบาง</div>
+      <p class="note" style="margin-top:10px">บางรุ่นมีระบบรักษาแรงหนีบ (pressure-keeping) ที่เติมน้ำมันอัตโนมัติถ้ากระบอกหนีบรั่วซึม เพื่อให้แรงหนีบคงที่ตลอดช่วงกด · ขนาดกล่องจับมักระบุเป็นรหัส เช่น 4018, 5022, 6025 ซึ่งกำหนดช่วงขนาดเสาที่จับได้</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 WALK -->
+<section id="walk">
+  <h2><span class="no">08</span>ระบบเดิน: ลองบูท & ช็อตบูท</h2>
+  <p class="lead">รถกดเสาเข็มไม่มีล้อหรือตีนตะขาบ แต่ “ก้าวเดิน” ด้วยการ <b>สลับฐานที่รับน้ำหนัก</b> ระหว่างลองบูท (ฐานยาว 2 ข้าง) กับช็อตบูท (ฐานสั้นใต้ตัวเครื่อง) โดยใช้กระบอกขาค้ำยกตัวเครื่องขึ้นลง และกระบอกเลื่อนดันตัวเครื่องไปทีละช่วงชัก</p>
+  <div class="grid2">
+    <div class="card">
+      <div class="row" style="margin-bottom:8px">
+        <button class="btn on" data-mode="long">เดินตามยาว</button>
+        <button class="btn" data-mode="lat">เดินด้านข้าง</button>
+        <button class="btn" data-mode="rot">หมุนตัว</button>
+        <span style="flex:1"></span>
+        <button class="btn primary" id="wStep">ขั้นถัดไป ▸</button>
+        <button class="btn" id="wAuto">▶ อัตโนมัติ</button>
+        <button class="btn" id="wReset">↺</button>
+      </div>
+      <div class="note">มุมมองด้านบน (ทึบ = แตะพื้นรับน้ำหนัก · เส้นประ = ยกลอย)</div>
+      <svg id="walkTop" viewBox="0 0 640 380" style="background:#fff;border:1px solid var(--line);border-radius:10px"></svg>
+      <div class="note" style="margin-top:6px">มุมมองด้านข้าง</div>
+      <svg id="walkSide" viewBox="0 0 640 130" style="background:#fff;border:1px solid var(--line);border-radius:10px"></svg>
+    </div>
+    <div class="card">
+      <h3 id="wTitle">เดินตามยาว (Longitudinal)</h3>
+      <ol class="steps" id="wSteps"></ol>
+      <div class="callout blue" style="margin-top:12px">ลองบูทมีพื้นที่สัมผัสมากกว่า แรงกดบนดินจึงต่ำกว่าช็อตบูท ตัวอย่างสเปก: ลองบูท ~95–130 kPa, ช็อตบูท ~114–150 kPa ขึ้นกับรุ่น — พื้นที่ทำงานต้องรับแรงได้ ถ้าดินอ่อนให้ปูแผ่นเหล็ก/บดอัดก่อน</div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 HYDRAULIC -->
+<section id="hyd">
+  <h2><span class="no">09</span>วงจรไฮดรอลิก — เลือกฟังก์ชันเพื่อดูเส้นทางน้ำมัน</h2>
+  <p class="lead">มอเตอร์ไฟฟ้าขับปั๊ม ส่งน้ำมันแรงดันสูงผ่านชุดวาล์วควบคุมทิศทาง (คันโยกในห้องคนขับ) ไปยังกระบอกแต่ละตัว น้ำมันอีกด้านไหลกลับถัง <span style="color:var(--orange);font-weight:600">ส้ม = สายแรงดัน</span> · <span style="color:var(--blue);font-weight:600">น้ำเงิน = สายไหลกลับ</span></p>
+  <div class="grid2">
+    <div class="card"><svg id="hydSvg" viewBox="0 0 760 420"></svg></div>
+    <div class="card">
+      <div class="row" id="hydBtns"></div>
+      <div id="hydInfo" style="margin-top:12px"></div>
+      <div class="callout" style="margin-top:12px"><b>วาล์วนิรภัย (Relief valve)</b> ตั้งแรงดันสูงสุดของระบบ ป้องกันกระบอกและท่อแตก และเป็นตัวจำกัดแรงกดสูงสุดของเครื่อง — ห้ามปรับเพิ่มเกินค่าที่ผู้ผลิตกำหนด</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 CALC -->
+<section id="calc">
+  <h2><span class="no">10</span>เครื่องคิดแรงกดจากเกจ</h2>
+  <p class="lead">ที่หน้างาน ผู้ควบคุมอ่าน “แรงดันเกจ” แล้วแปลงเป็น “แรงกด” ด้วยพื้นที่ลูกสูบรวม ใส่ค่าของเครื่องจริงได้เลย (ค่าตั้งต้นเป็นตัวอย่าง)</p>
+  <div class="grid3">
+    <div class="card">
+      <label class="f">เส้นผ่านศูนย์กลางลูกสูบ (มม.)<input type="number" id="cD" value="250" min="50" max="600"></label>
+      <label class="f" style="margin-top:8px">จำนวนกระบอกกด (ต้น)<input type="number" id="cn" value="2" min="1" max="8"></label>
+      <label class="f" style="margin-top:8px">แรงดันเกจ (MPa)<input type="number" id="cP" value="20" step="0.5" min="0" max="40"></label>
+      <p class="note">1 MPa = 10 bar ≈ 10.2 kg/cm²</p>
+    </div>
+    <div class="card">
+      <div class="note">พื้นที่ลูกสูบรวม</div><div class="kpi" id="cA">–</div>
+      <div class="note" style="margin-top:10px">แรงกดที่ได้</div><div class="kpi" id="cF" style="color:var(--orange)">–</div>
+      <div class="note" id="cFkN"></div>
+    </div>
+    <div class="card">
+      <label class="f">ต้องการแรงกด (ตัน)<input type="number" id="cT" value="100" min="1"></label>
+      <div class="note" style="margin-top:10px">ต้องกดถึงแรงดันเกจ</div><div class="kpi" id="cPreq" style="color:var(--blue)">–</div>
+      <div class="note" id="cPreq2"></div>
+    </div>
+  </div>
+  <div class="callout red" style="margin-top:12px">ค่าที่คำนวณเป็นค่าทางทฤษฎี ในงานจริงต้องใช้ <b>ตารางสอบเทียบเกจ (Calibration certificate)</b> ของเครื่องนั้น ๆ เพราะมีแรงเสียดทานในกระบอกและความคลาดเคลื่อนของเกจ — ผลการกดเสาจะเชื่อถือได้เท่ากับความแม่นยำของเกจ</div>
+</section>
+
+<!-- 8 STOP -->
+<section id="stop">
+  <h2><span class="no">11</span>เมื่อไหร่ถึงหยุดกด? (Termination criteria)</h2>
+  <p class="lead">เกณฑ์หยุดกดกำหนดโดยวิศวกรผู้ออกแบบ แนวปฏิบัติที่พบบ่อยในต่างประเทศมีองค์ประกอบคล้ายกัน:</p>
+  <div class="grid3">
+    <div class="card"><h3>① แรงกดสุดท้าย</h3><p>กดจนถึงแรงเป้าหมาย มักกำหนดเป็นเท่าของน้ำหนักบรรทุกออกแบบ เช่น ~2.0–2.5 เท่า (ขึ้นกับความยาว/สัดส่วนเสาและข้อกำหนดโครงการ)</p></div>
+    <div class="card"><h3>② คงแรง & กดซ้ำ</h3><p>คงแรงไว้ระยะหนึ่ง (เช่น ~20–30 วินาที) แล้วคลาย–กดซ้ำตามจำนวนรอบที่กำหนด เช่น 2 รอบ</p></div>
+    <div class="card"><h3>③ ระยะทรุด (Set)</h3><p>วัดระยะที่เสาทรุดระหว่างคงแรงให้ไม่เกินค่าที่วิศวกรกำหนด และต้องมีความลึกขั้นต่ำตามแบบ</p></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>สิ่งที่ต้องบันทึก/ควบคุมระหว่างกด</h3>
+    <ul class="check">
+      <li>บันทึกแรงดันเกจเทียบความลึกอย่างต่อเนื่อง (หลายข้อกำหนดให้บันทึกทุก 0.3 ม.) — ช่วยตรวจพบชั้นดินแข็ง/สิ่งกีดขวางผิดปกติ</li>
+      <li>แนวดิ่งของเสา: ตรวจก่อนกดและหลังต่อเสาทุกท่อน (ตัวอย่างข้อกำหนด: เอียงไม่เกิน 1:75)</li>
+      <li>แรงกดต้องลงตามแนวแกนเสา และกล่องจับต้องไม่ทำให้เสาเสียหาย</li>
+      <li>เกจ/โหลดเซลล์ต้องผ่านการสอบเทียบ และใช้ตารางแปลงค่าที่ถูกเครื่อง</li>
+      <li>ถ้าเสาหยุดก่อนถึงความลึกที่คาด (ติดชั้นแข็ง) หรือจมเกินมาก — แจ้งวิศวกร อย่าตัดสินใจเอง</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 9 SITE -->
+<section id="site">
+  <h2><span class="no">12</span>เตรียมหน้างาน & การส่งเสาเข็ม</h2>
+  <p class="lead">มุมมองสำหรับทีมขนส่งและหน้างาน — ข้อจำกัดของรถกดที่มีผลต่อการวางแผนส่งเสา</p>
+  <div class="grid3">
+    <div class="card"><h3>🏗 เครนประจำเครื่อง</h3><p>รุ่นทั่วไปยกได้ ~8–16 ตัน และยกเสาได้ยาวราว 14–15 ม. → ความยาวท่อนเสาที่ส่งต้องไม่เกินที่เครนยกตั้งได้ และวางกองเสาให้อยู่ในรัศมีเครน</p></div>
+    <div class="card"><h3>🧱 พื้นที่ทำงาน</h3><p>ตัวเครื่องหนักเท่ากับแรงกดพิกัด (100–400+ ตัน) ทางเข้าและพื้นที่กดต้องรับแรงกดบนดินได้ ระวังรถส่งเสาวิ่งทับร่องที่รถกดเพิ่งผ่าน และหลุมเสาที่กดแล้ว</p></div>
+    <div class="card"><h3>📐 เสาริม / เสามุม</h3><p>เสาที่ชิดแนวเขตหรืออาคารข้างเคียงใช้ชุดกดเสาริมด้านข้างเครื่อง ระยะชิดขอบขั้นต่ำขึ้นกับรุ่น (ตัวอย่าง ~0.4–1.2 ม. ด้านข้าง, 0.9–1.8 ม. มุม) ชุดนี้มักมีแรงกดต่ำกว่าชุดกดหลัก ต้องเช็คสเปก</p></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>เช็คลิสต์ความปลอดภัยก่อนเริ่มกด</h3>
+    <div class="grid2" style="gap:6px 24px">
+      <ul class="check" style="margin:0">
+        <li>ตรวจตุ้มถ่วงวางครบ ยึดแน่น ไม่เอียง</li>
+        <li>ปรับระดับเครื่องให้ได้ระดับก่อนกด (ผ่านกระบอกขาค้ำ)</li>
+        <li>ตรวจรอยรั่วซึมท่อไฮดรอลิก ข้อต่อ และระดับน้ำมัน</li>
+        <li>ทดสอบกล่องจับ แผ่นจับไม่สึก ไม่มีเศษคอนกรีตติด</li>
+      </ul>
+      <ul class="check" style="margin:0">
+        <li>ระบบไฟฟ้า: สายดิน เบรกเกอร์กันไฟรั่ว สายไฟไม่ถูกรถทับ</li>
+        <li>กันพื้นที่รัศมีเครนและใต้เสาที่กำลังยก</li>
+        <li>สังเกตอาการ “เครื่องลอย” เมื่อแรงใกล้พิกัด — หยุดทันที</li>
+        <li>ตรวจแนวดิ่งเสาหลังตั้งเสาและหลังต่อเสาทุกท่อน</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer id="sources">
+  <h3 style="color:var(--ink)">แหล่งอ้างอิง</h3>
+  <ol class="src">
+    <li>US Patent 8827336 — Swivelling pile clamp (หลักการจับ-กด, แรงหนีบ ≥ 2 เท่าแรงกด): <a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/8827336">uspto.gov</a></li>
+    <li>US Patent 10604905 — Multifunctional wall clamping device of static piling machine (แผ่นจับ Active/Passive, กระบอกดันแนวนอน): <a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/10604905">uspto.gov</a></li>
+    <li>คู่มือ ZYC120B-B1 Hydraulic Static Pile Driver (ส่วนประกอบ, ลำดับการเดินลองบูท/ช็อตบูท, แรงกดบนดิน, เครน): <a href="https://www.scribd.com/document/585999097/Multi-Beton-hspd-120-Ton">scribd.com</a></li>
+    <li>Goodeng GPY208 / GPY268 / GPY368 — สเปกกล่องจับ ระยะเสาริม/มุม แรงกดบนดิน ระบบกำลังคงที่: <a href="https://www.goodeng.com/goodeng-static-pile-press-gpy208/">goodeng.com</a>, <a href="https://www.goodeng.com/goodeng-hydraulic-static-pile-driver-gpy268-pile-machinery-product/">GPY268</a>, <a href="https://www.goodeng.com/goodeng-hydraulic-static-pile-driver-gpy368-pile-machinery-product/">GPY368</a></li>
+    <li>ZYJ220B-II spec (แรงกดบนดิน, ระยะเสาริม): <a href="https://mafal-machinery.en.made-in-china.com/product/RXjEqDZCMHrN/China-220ton-Zyj220b-II-Hydraulic-Static-Pile-Driver-for-Sale.html">made-in-china.com</a></li>
+    <li>Singapore BCA — Good Practice for Installation of Jacked Foundation Piles (เกณฑ์หยุดกด, Set, สอบเทียบ): <a href="https://isomer-user-content.by.gov.sg/338/060e1fc4-67b1-4a2f-bbef-5562e5b1c0d7/Good%20Practice%20for%20Installation%20of%20Jacked%20Foundation%20Piles%20in.pdf">gov.sg</a></li>
+    <li>GNP Group Spec SP011 — Jack-in piles (บันทึกทุก 300 มม., แนวดิ่ง 1:75, 2.5 เท่า): <a href="https://www.gnpgroup.com.my/wp-content/uploads/2017/03/SP011.pdf">gnpgroup.com.my</a></li>
+    <li>Yang et al., Termination Criteria for Jacked Pile Construction (ASCE JGGE 2006): <a href="https://ascelibrary.com/doi/10.1061/(ASCE)1090-0241(2006)132:7(819)">ascelibrary.com</a></li>
+    <li>SEAGS-AGSSEA Journal — High capacity jack-in piles: <a href="https://ph01.tci-thaijo.org/index.php/SEAGS_AGSSEA_Journal/article/download/258874/173037/983801">tci-thaijo.org</a></li>
+    <li>ตารางขนาดเสาเข็มไอ (พื้นที่ เส้นรอบรูป น้ำหนัก น้ำหนักปลอดภัย): <a href="https://www.yellowpages.co.th/en/catalog/item/เสาเข็มคอนกรีต-qaXG1Hx">yellowpages.co.th</a>, มาตรฐาน มอก.396-2549: <a href="https://www.yellowpages.co.th/en/catalog/item/เสาเข็มตัวไอ-มาตรฐาน-มอก-5WthheX">PACO I-pile</a></li>
+    <li>ขั้นตอน Static Load Test ทีละ 25% ถึง 200% บันทึก 1 และ 5 นาที: <a href="https://www.tpa.or.th/tpanews/upload/mag_content/111/ContentFile2171.pdf">TPA News (นิพนธ์ ลักขณาอดิศร)</a></li>
+  </ol>
+  <p>หมายเหตุ: ตัวเลขในหน้าจำลองเป็นค่าตัวอย่างเพื่อการเรียนรู้ ค่าจริงขึ้นกับรุ่นเครื่อง คู่มือผู้ผลิต และข้อกำหนดของวิศวกรผู้ออกแบบ</p>
+</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+const fmt=(v,d=1)=>Number(v).toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* ================= PARTS ================= */
+const PARTS={
+ frame:{th:'โครงกด / คานกดหลัก',en:'Pile-pressing frame & cross beam',sys:'ระบบกดเสา',d:'เสาไกด์และคานบนที่ยึดกับตัวเครื่อง ทำหน้าที่นำทางให้กล่องจับเลื่อนขึ้น–ลงในแนวดิ่งเท่านั้น และรับแรงปฏิกิริยาจากกระบอกกดส่งต่อไปยังตัวเครื่องและตุ้มถ่วง',chk:['รอยร้าวที่รอยเชื่อม','ความตรงของรางไกด์','สลักยึดคาน']},
+ presscyl:{th:'กระบอกกดเสาเข็ม',en:'Pile-pressing cylinders',sys:'ระบบกดเสา',d:'กระบอกไฮดรอลิกขนาดใหญ่ 2–4 ต้น ยึดระหว่างคานกดกับกล่องจับ เมื่อดันออกจะพากล่องจับ (ที่หนีบเสาไว้) ลงทีละช่วงชัก แรงกด = แรงดัน × พื้นที่ลูกสูบ × จำนวนกระบอก ช่วงยกกลับขึ้นออกแบบให้เร็วเพื่อลดเวลาต่อรอบ',chk:['ซีลรั่ว/น้ำมันซึมที่ก้านสูบ','รอยขีดข่วนก้านสูบ','แรงดันเกจตรงกับตารางสอบเทียบ']},
+ clampbox:{th:'กล่องจับเสาเข็ม',en:'Pile clamping box',sys:'ระบบกดเสา',d:'กล่องเหล็กที่มีแผ่นจับ (jaw) ภายใน กระบอกแนวนอนดันแผ่นจับเข้าหนีบผิวเสา แรงกดถ่ายเข้าเสาด้วยแรงเสียดทาน จึงต้องหนีบแรงพอ (อย่างน้อย ~2 เท่าแรงกด) ขนาดกล่องกำหนดช่วงขนาดเสาที่ใช้ได้ (เช่น รหัส 4018, 5022, 6025)',chk:['แผ่นจับสึก/เศษคอนกรีตติด','กระบอกหนีบรั่ว (แรงหนีบตก)','เสาเป็นรอยครูด = สัญญาณลื่น']},
+ counterweight:{th:'ตุ้มถ่วง',en:'Counterweight (Kentledge)',sys:'ระบบน้ำหนักถ่วง',d:'แท่งเหล็กหล่อ/คอนกรีตวางซ้อนบนตัวเครื่อง เป็นแหล่ง “แรงต้าน” ของการกด น้ำหนักเครื่อง + ตุ้มถ่วง ต้องมากกว่าแรงกดสูงสุดที่ต้องการ มิฉะนั้นตัวเครื่องจะยกลอยแทน ปรับจำนวนตุ้มได้ตามแรงกดที่ต้องใช้',chk:['วางครบตามแรงที่ต้องใช้','สมดุลซ้าย–ขวา','ยึดแน่น ไม่เลื่อนขณะเดิน']},
+ body:{th:'ตัวเครื่อง / แชสซี',en:'Machine body (chassis)',sys:'โครงสร้างหลัก',d:'โครงเหล็กหลักที่รวมทุกระบบไว้ รับน้ำหนักตุ้มถ่วง ถ่ายแรงจากคานกดไปยังฐาน และเป็นจุดยึดกระบอกขาค้ำ ระบบเดิน เครน และห้องควบคุม',chk:['ระดับน้ำ (level) ก่อนกด','รอยร้าวโครงสร้าง']},
+ longboat:{th:'ลองบูท (ฐานเดินยาว)',en:'Long boat / long bridge',sys:'ระบบเดิน',d:'ฐานยาวสองข้างตัวเครื่อง มีรางให้รถเลื่อน (trolley) วิ่ง กระบอกเลื่อนตามยาวดันตัวเครื่องไปตามราง ใช้สำหรับ “เดินตามยาว” และเป็นฐานหลักรับน้ำหนักขณะกดเสา เพราะพื้นที่สัมผัสมาก แรงกดบนดินจึงต่ำกว่าช็อตบูท',chk:['พื้นใต้ลองบูทแน่น ไม่ยุบ','รางและล้อเลื่อนสะอาด']},
+ shortboat:{th:'ช็อตบูท (ฐานเดินสั้น)',en:'Short boat',sys:'ระบบเดิน',d:'ฐานสั้นใต้ตัวเครื่อง วางขวางกับลองบูท มีกระบอกเลื่อนด้านข้างและโต๊ะหมุน (slewing table) ใช้ “เดินด้านข้าง” และ “หมุนตัวเครื่อง” โดยสลับรับน้ำหนักกับลองบูท',chk:['โต๊ะหมุนและสลัก','แรงกดบนดินสูงกว่าลองบูท — ระวังดินอ่อน']},
+ legs:{th:'กระบอกขาค้ำ / ยกตัวเครื่อง',en:'Leg (lifting) cylinders',sys:'ระบบเดิน',d:'กระบอกแนวตั้ง 4 ต้นที่มุมเครื่อง เมื่อยืดออกจะกดลองบูทลงพื้นและยกตัวเครื่อง (ช็อตบูทลอย) เมื่อหดจะลดตัวเครื่องลงให้ช็อตบูทแตะพื้นแล้วยกลองบูทขึ้น จึงเป็นหัวใจของการ “ก้าว” และใช้ปรับระดับเครื่องก่อนกด',chk:['ซีลรั่ว','ยืด–หดพร้อมกันสม่ำเสมอ']},
+ crane:{th:'เครนประจำเครื่อง',en:'Onboard crane',sys:'ระบบยก',d:'เครนบูมติดตัวเครื่อง ใช้ยกเสาเข็มจากกองขึ้นตั้งเข้ากล่องจับ และยกท่อนต่อ ตัวอย่างสเปก: ยกได้ ~8–16 ตัน ยกเสาได้ยาว ~14–15 ม. ความเร็วรอกราว 11 ม./นาที',chk:['ลวดสลิง ตะขอ ล็อกนิรภัย','น้ำหนักเสา ≤ พิกัดที่รัศมีนั้น']},
+ power:{th:'ชุดต้นกำลังไฮดรอลิก',en:'Hydraulic power unit',sys:'ระบบไฮดรอลิก',d:'มอเตอร์ไฟฟ้าขับปั๊มไฮดรอลิก ดูดน้ำมันจากถังส่งไปยังชุดวาล์ว หลายรุ่นใช้ระบบ “กำลังคงที่” (constant power): แรงต่ำ = เร็ว, แรงสูง = ช้าลง ใช้พลังงานคุ้มค่า มีไส้กรองและระบบระบายความร้อนน้ำมัน',chk:['ระดับและอุณหภูมิน้ำมัน','ไส้กรองอุดตัน','เสียงปั๊มผิดปกติ']},
+ cab:{th:'ห้องควบคุม',en:'Operator cab',sys:'ระบบควบคุม',d:'มีคันโยกวาล์วควบคุมทุกการเคลื่อนที่ (กด, หนีบ, ขาค้ำ, ลองบูท, ช็อตบูท, เครน) และเกจวัดแรงดันของกระบอกกด ซึ่งผู้ควบคุมใช้อ่าน/บันทึกแรงกดเทียบความลึก บางรุ่นมีระบบบันทึกอัตโนมัติ',chk:['เกจทำงาน/สอบเทียบไม่หมดอายุ','มองเห็นเสาและผู้ให้สัญญาณชัด']},
+ electric:{th:'ระบบไฟฟ้า',en:'Electrical system',sys:'ระบบไฟฟ้า',d:'ตู้ควบคุมไฟฟ้าจ่ายไฟให้มอเตอร์ปั๊ม (รับไฟจากหม้อแปลงหรือเครื่องปั่นไฟหน้างาน) มีระบบป้องกันไฟรั่วและสายดิน',chk:['สายดิน','เบรกเกอร์กันไฟรั่ว','สายไฟเมนไม่ถูกเหยียบ/ทับ']},
+ sidepile:{th:'ชุดกดเสาริม (Side piling)',en:'Side / corner pile mechanism',sys:'ระบบกดเสา',d:'กล่องจับเสริมติดด้านข้างตัวเครื่อง สำหรับเสาที่อยู่ชิดแนวเขตหรืออาคารข้างเคียง ซึ่งชุดกดกลางเข้าไม่ถึง ระยะชิดขอบขั้นต่ำขึ้นกับรุ่น (ตัวอย่าง ~0.4–1.2 ม. ด้านข้าง) มักมีแรงกดต่ำกว่าชุดหลัก',chk:['แรงกดพิกัดของชุดริม','ระยะห่างโครงสร้างข้างเคียง']}
+};
+const order=['frame','presscyl','clampbox','counterweight','body','longboat','shortboat','legs','crane','power','cab','electric','sidepile'];
+const pb=$('#partBtns');
+order.forEach(k=>{const b=document.createElement('button');b.textContent=PARTS[k].th;b.dataset.part=k;b.onclick=()=>selPart(k);pb.appendChild(b);});
+$$('#machine .part').forEach(g=>g.addEventListener('click',()=>selPart(g.dataset.part)));
+function selPart(k){
+  const p=PARTS[k];const svg=$('#machine');svg.classList.add('dim');
+  $$('#machine .part').forEach(g=>g.classList.toggle('sel',g.dataset.part===k));
+  $$('#partBtns button').forEach(b=>b.classList.toggle('sel',b.dataset.part===k));
+  $('#partInfo').innerHTML=`<span class="pill">${p.sys}</span><h3 style="margin-top:6px">${p.th}</h3><div class="en">${p.en}</div><p>${p.d}</p><div class="note" style="font-weight:600;color:var(--ink)">จุดที่ควรตรวจ</div><ul class="check">${p.chk.map(c=>'<li>'+c+'</li>').join('')}</ul><button class="btn" id="clrPart">แสดงทั้งหมด</button>`;
+  $('#clrPart').onclick=()=>{svg.classList.remove('dim');$$('#machine .part').forEach(g=>g.classList.remove('sel'));$$('#partBtns button').forEach(b=>b.classList.remove('sel'));};
+}
+
+/* ================= PRESS SIM ================= */
+const IPILES={I18:{b:.18,A:216,p:89,w:51.8,s:'6–15'},I22:{b:.22,A:344,p:109,w:82.6,s:'20–25'},I26:{b:.26,A:460,p:127,w:110.4,s:'30–35'},I30:{b:.30,A:600,p:147,w:144,s:'40–45'},I35:{b:.35,A:811,p:174,w:194.6,s:'50–55'},I40:{b:.40,A:1240,p:192,w:297.6,s:'60–70'}};
+function pileProps(key){if(key[0]==='I'){const q=IPILES[key];return {key,type:'I',b:q.b,A:q.A/1e4,p:q.p/100,name:'เสาเข็มไอ '+key.replace('I','I-')};}const b=+key.slice(2)/100;return {key,type:'sq',b,A:b*b,p:4*b,name:'สี่เหลี่ยมตัน '+b.toFixed(2)+'×'+b.toFixed(2)+' ม.'};}
+const SOILS={
+ deep:[{to:12,fs:8,qb:150,n:'ดินเหนียวอ่อน',c:'#c9c3ad'},{to:20,fs:40,qb:1500,n:'ดินเหนียวแข็ง',c:'#a8997a'},{to:40,fs:80,qb:5000,n:'ทรายแน่น',c:'#dcc681'}],
+ shallow:[{to:6,fs:10,qb:200,n:'ดินเหนียวอ่อน',c:'#c9c3ad'},{to:12,fs:45,qb:2000,n:'ดินเหนียวแข็ง',c:'#a8997a'},{to:40,fs:90,qb:6000,n:'ทรายแน่นมาก',c:'#dcc681'}]
+};
+const SEG=12, STROKE=1.8, G=9.81, RATED_MPA=25, HMAX=3.3, HMIN=HMAX-STROKE;
+let S={};
+function cfg(){
+  const pp=pileProps($('#selPile').value);
+  return {cap:+$('#selCap').value,b:pp.b,p:pp.p,A:pp.A,ptype:pp.type,soil:SOILS[$('#selSoil').value],nseg:+$('#selSeg').value,
+    dl:+$('#rngDL').value,sf:+$('#rngSF').value/10,spd:+$('#selSpd').value};
+}
+function smooth(t){t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);}
+function resist(z,c){ // kN
+  if(z<=0)return 0;
+  const p=c.p,A=c.A;let top=0,fr=0,qb=0;
+  const L=c.soil;
+  for(let i=0;i<L.length;i++){const l=L[i];const bot=l.to;if(z>top){fr+=p*l.fs*(Math.min(z,bot)-top);}
+    if(z>top&&z<=bot){let q=l.qb*(1+0.03*(z-top));
+      if(i+1<L.length){const t=smooth((z-(bot-0.8))/0.8);q=q*(1-t)+L[i+1].qb*t;}
+      qb=q;}
+    top=bot;}
+  return fr+qb*A;
+}
+function reset(){
+  const c=cfg();
+  S={c,phase:'idle',t:0,depth:0,clampH:HMAX,stroke:0,force:0,used:SEG,segUsed:1,trace:[],log:[],nextLog:1,hold:0,holdN:0,run:false,msg:'',joints:[],lifted:false};
+  S.target=c.dl*c.sf; S.Atot=c.cap*G*1000/(RATED_MPA*1e6);
+  $('#dlv').textContent=c.dl;$('#sfv').textContent=c.sf.toFixed(1);
+  $('#oTarget').textContent=fmt(S.target,0)+' / '+c.cap;
+  $('#logBody').innerHTML='';
+  $('#bPlay').textContent='▶ เริ่มกด';
+  if(S.target>c.cap) setMsg(`⚠️ แรงเป้าหมาย ${fmt(S.target,0)} ตัน เกินพิกัดเครื่อง ${c.cap} ตัน — ต้องเลือกเครื่องที่ใหญ่ขึ้น (ลองกดดูว่าเกิดอะไรขึ้น)`,'red');
+  else setMsg(`ตั้งเสาท่อนแรกเข้ากล่องจับด้วยเครน ตรวจแนวดิ่ง แล้วกด ▶ · เป้าหมาย ${fmt(S.target,0)} ตัน = ${c.dl} × ${c.sf.toFixed(1)}`,'');
+  buildSoil();buildChart();draw();
+}
+function setMsg(t,cls){const m=$('#simMsg');m.innerHTML=t;m.className='callout'+(cls?' '+cls:'');}
+function pressureMPa(fT){return fT*G*1000/S.Atot/1e6;}
+function log(){while(S.depth>=S.nextLog){const f=resist(S.nextLog,S.c)/G;
+  const tr=document.createElement('tr');tr.innerHTML=`<td>${S.nextLog.toFixed(1)}</td><td>${fmt(f)}</td><td>${fmt(pressureMPa(f))}</td>`;$('#logBody').appendChild(tr);
+  const lb=document.querySelector('.logbox');lb.scrollTop=lb.scrollHeight;S.nextLog+=1;}}
+const DUR={raise:1.0,clamp:0.5,release:0.4,weld:2.6,hold:2.2};
+function step(dt){
+  const c=S.c;S.t+=dt;
+  switch(S.phase){
+  case 'raise':{S.clampH=Math.min(HMAX,S.clampH+STROKE*dt/DUR.raise);S.force=0;
+    if(S.clampH>=HMAX){ const above=S.used-S.depth;
+      if(above<=HMIN+0.25){ if(S.segUsed<c.nseg){S.phase='weld';S.t=0;setMsg('🔧 ปลายบนเสาใกล้ระดับกล่องจับ → ยกเสาท่อนถัดไปด้วยเครน วางต่อ เชื่อมรอยต่อ และตรวจแนวดิ่งก่อนกดต่อ','');}
+        else{S.phase='done';S.run=false;setMsg(`⛔ ใช้ความยาวเสาหมดแล้ว (${S.used} ม.) แรงกดยังไม่ถึงเป้าหมาย (${fmt(S.force||resist(S.depth,c)/G)} / ${fmt(S.target,0)} ตัน) → แจ้งวิศวกร อาจต้องเพิ่มความยาวเสาหรือทบทวนเกณฑ์`,'red');}
+      } else {S.phase='clamp';S.t=0;}}
+    break;}
+  case 'clamp': if(S.t>=DUR.clamp){S.phase='press';S.t=0;S.stroke=0;setMsg('กระบอกกดดันกล่องจับลง เสาเข็มจมตามไปด้วย แรงต้านดินเพิ่มขึ้นตามความลึก','');} break;
+  case 'press':{
+    const Fcur=resist(S.depth,c)/G; // t
+    const vmax=STROKE/1.6; const F1=0.35*c.cap; const v=Fcur>F1?vmax*F1/Fcur:vmax;
+    let dz=v*dt; const above=S.used-S.depth; const lim=Math.min(STROKE-S.stroke,above-HMIN+0.0);
+    // find if target reached within dz
+    let nz=S.depth+Math.min(dz,Math.max(0,S.clampH-HMIN));
+    const Fn=resist(nz,c)/G;
+    if(Fn>=Math.min(S.target,c.cap)){ // bisection for exact depth
+      let lo=S.depth,hi=nz,lim2=Math.min(S.target,c.cap);for(let i=0;i<30;i++){const m=(lo+hi)/2;(resist(m,c)/G>=lim2)?hi=m:lo=m;}
+      S.clampH-= (hi-S.depth);S.stroke+=(hi-S.depth);S.depth=hi;S.force=lim2;log();
+      if(S.target>c.cap){S.phase='done';S.run=false;S.lifted=true;setMsg(`⛔ แรงต้านดินถึงพิกัดเครื่อง ${c.cap} ตัน (≈ น้ำหนักเครื่อง+ตุ้มถ่วง) — <b>ตัวเครื่องเริ่มยกลอย</b> เสาไม่จมต่อ ต้องหยุดกดทันที แรงเป้าหมาย ${fmt(S.target,0)} ตันทำไม่ได้ด้วยเครื่องนี้`,'red');}
+      else{S.phase='hold';S.t=0;S.holdN=1;setMsg(`🎯 ถึงแรงเป้าหมาย ${fmt(S.target,0)} ตัน ที่ความลึก ${fmt(S.depth,2)} ม. → คงแรงไว้ (เช่น 30 วินาที) รอบที่ 1/2 แล้ววัดระยะทรุด`,'');}
+      break;}
+    const move=nz-S.depth;S.depth=nz;S.clampH-=move;S.stroke+=move;S.force=Fn;log();
+    S.trace.push([S.depth,S.force]);
+    if(S.clampH<=HMIN+1e-6){S.phase='release';S.t=0;}
+    break;}
+  case 'release': if(S.t>=DUR.release){S.phase='raise';S.t=0;S.force=0;} break;
+  case 'weld': if(S.t>=DUR.weld){S.joints.push(S.used);S.used+=SEG;S.segUsed++;S.phase='clamp';S.t=0;setMsg(`ต่อเสาท่อนที่ ${S.segUsed} แล้ว ความยาวรวม ${S.used} ม. — กดต่อ`,'');} break;
+  case 'hold': S.force=S.target; if(S.t>=DUR.hold){ if(S.holdN<2){S.holdN++;S.t=0;setMsg(`คลายแล้วกดซ้ำถึง ${fmt(S.target,0)} ตัน — คงแรงรอบที่ 2/2 · ระยะทรุดระหว่างคงแรงน้อยมาก = ผ่าน`,'');}
+      else{S.phase='done';S.run=false;const cut=S.used-S.depth;setMsg(`✅ กดเสร็จ: ความลึก ${fmt(S.depth,2)} ม. แรงสุดท้าย ${fmt(S.target,0)} ตัน (${fmt(pressureMPa(S.target))} MPa) · ส่วนที่โผล่เหนือดิน ~${fmt(cut,1)} ม. ตัดหัวเสาตามระดับในแบบ · เดินเครื่องไปตำแหน่งถัดไป`,'');}} break;
+  }
+}
+let last=0;
+function loop(ts){
+  if(!S.run){last=0;return;}
+  const dt=last?Math.min(0.05,(ts-last)/1000):0;last=ts;
+  const n=4;for(let i=0;i<n;i++)step(dt*S.c.spd/n);
+  draw();
+  if(S.run)requestAnimationFrame(loop);else $('#bPlay').textContent='▶ เริ่มกด';
+}
+$('#bPlay').onclick=()=>{
+  if(S.phase==='done'){reset();}
+  if(S.run){S.run=false;$('#bPlay').textContent='▶ ทำต่อ';return;}
+  if(S.phase==='idle'){S.phase='clamp';S.t=0;}
+  S.c.spd=+$('#selSpd').value;S.run=true;$('#bPlay').textContent='⏸ หยุดชั่วคราว';requestAnimationFrame(loop);
+};
+$('#bReset').onclick=()=>{S.run=false;reset();};
+['#selCap','#selPile','#selSoil','#selSeg','#rngDL','#rngSF'].forEach(s=>$(s).addEventListener('input',()=>{S.run=false;reset();}));
+$('#selSpd').onchange=()=>{if(S.c)S.c.spd=+$('#selSpd').value;};
+
+// zoom svg
+const Z=$('#zoom');const ZG=400,ZS=60; // ground y, px per m
+const zb=el('g',{},Z);
+function draw(){
+  drawZoom();drawSoil();drawChart();drawGauge();
+  $('#oDepth').textContent=fmt(S.depth,2)+' ม.';
+  const f=S.force||0;$('#oForce').textContent=fmt(f)+' ตัน';
+  const mp=pressureMPa(f);$('#oPress').textContent=fmt(mp)+' MPa';$('#oBar').textContent=fmt(mp*10,0)+' bar ≈ '+fmt(mp*10.2,0)+' kg/cm²';
+  $$('#phases span').forEach(s=>s.classList.toggle('on',s.dataset.ph===S.phase));
+}
+function drawZoom(){
+  zb.innerHTML='';
+  el('rect',{x:0,y:ZG,width:300,height:20,fill:'#cbbf9f'},zb);
+  // body level
+  el('rect',{x:0,y:ZG-60,width:300,height:16,fill:'#5f7184'},zb);
+  if(S.lifted){el('text',{x:150,y:ZG-66,'text-anchor':'middle','font-size':12,fill:'#c4372b','font-weight':600},zb).textContent='⚠ ตัวเครื่องยกลอย';}
+  // frame
+  el('rect',{x:30,y:14,width:14,height:ZG-60-14,fill:'#1c2530'},zb);el('rect',{x:256,y:14,width:14,height:ZG-60-14,fill:'#1c2530'},zb);
+  el('rect',{x:24,y:6,width:252,height:18,fill:'#1c2530'},zb);
+  // pile
+  const pw=Math.max(34,S.c.b*130), px=150-pw/2;
+  const topY=ZG-(S.used-S.depth)*ZS;
+  const y0=Math.max(0,topY);
+  el('rect',{x:px,y:y0,width:pw,height:ZG-y0,fill:'#d9d4c8',stroke:'#8a8578'},zb);
+  if(S.c.ptype==='I')el('rect',{x:px+pw*0.33,y:y0,width:pw*0.34,height:ZG-y0,fill:'#c4beb0'},zb);
+  // texture marks every 0.5m along pile
+  const off=(S.depth*ZS)%30;
+  for(let y=ZG+off-30*14;y<ZG;y+=30){if(y>y0)el('line',{x1:px+4,x2:px+10,y1:y,y2:y,stroke:'#a8a296'},zb);}
+  S.joints.forEach(j=>{const y=ZG-(j-S.depth)*ZS;if(y>0&&y<ZG)el('rect',{x:px-3,y:y-3,width:pw+6,height:6,fill:'#5f7184'},zb);});
+  if(topY>0)el('rect',{x:px-3,y:topY-4,width:pw+6,height:6,fill:'#8a8578'},zb);
+  if(S.phase==='weld'){const ny=topY-SEG*ZS;el('rect',{x:px,y:Math.max(0,ny),width:pw,height:topY-Math.max(0,ny),fill:'#efe6c8',stroke:'#e0601b','stroke-dasharray':'5 4'},zb);
+    el('text',{x:150,y:Math.max(16,topY-14),'text-anchor':'middle','font-size':12,fill:'#e0601b','font-weight':600},zb).textContent='ต่อท่อนใหม่ + เชื่อม';}
+  // clamp box
+  const cy=ZG-S.clampH*ZS; const clamped=['clamp','press','hold'].includes(S.phase)&&!(S.phase==='clamp'&&S.t<0.2);
+  // cylinders
+  [[62,90],[210,238]].forEach(([a,b])=>{el('rect',{x:a,y:24,width:b-a,height:110,fill:'#2e6bb3'},zb);el('rect',{x:a+8,y:134,width:b-a-16,height:Math.max(0,cy-25-134),fill:'#c9d7e8',stroke:'#8fa6c2'},zb);});
+  el('rect',{x:50,y:cy-25,width:200,height:50,rx:6,fill:'#e0601b',stroke:'#1c2530'},zb);
+  const gap=clamped?0:10;
+  el('rect',{x:px-16-gap,y:cy-16,width:16,height:32,fill:'#1c2530'},zb);
+  el('rect',{x:px+pw+gap,y:cy-16,width:16,height:32,fill:'#1c2530'},zb);
+  el('text',{x:150,y:cy+40,'text-anchor':'middle','font-size':11,fill:'#1c2530'},zb).textContent=clamped?'หนีบ':'คลาย';
+  if(S.phase==='press'){el('path',{d:`M 272 ${cy-30} l0 46 l-6 -10 m6 10 l6 -10`,stroke:'#e0601b','stroke-width':3,fill:'none'},zb);}
+  if(S.phase==='raise'){el('path',{d:`M 272 ${cy+16} l0 -46 l-6 10 m6 -10 l6 10`,stroke:'#2e6bb3','stroke-width':3,fill:'none'},zb);}
+  el('text',{x:8,y:ZG+15,'font-size':11,fill:'#1c2530'},zb).textContent='ระดับดิน';
+}
+// soil
+const SO=$('#soil');const SG=40,SK=14;let soilBase,soilDyn;
+function buildSoil(){
+  SO.innerHTML='';soilBase=el('g',{},SO);soilDyn=el('g',{},SO);
+  let top=0;S.c.soil.forEach(l=>{const bot=Math.min(30,l.to);el('rect',{x:0,y:SG+top*SK,width:220,height:(bot-top)*SK,fill:l.c},soilBase);
+    el('text',{x:216,y:SG+top*SK+16,'text-anchor':'end','font-size':11,fill:'#1c2530'},soilBase).textContent=l.n;top=bot;});
+  for(let d=0;d<=30;d+=5){el('line',{x1:0,x2:8,y1:SG+d*SK,y2:SG+d*SK,stroke:'#1c2530'},soilBase);el('text',{x:11,y:SG+d*SK+4,'font-size':10,fill:'#1c2530'},soilBase).textContent=d+' ม.';}
+  el('rect',{x:40,y:SG-14,width:140,height:10,fill:'#5f7184'},soilBase);
+}
+function drawSoil(){
+  soilDyn.innerHTML='';
+  const tipY=SG+S.depth*SK, topY=Math.max(0,SG-(S.used-S.depth)*SK);
+  el('rect',{x:102,y:topY,width:16,height:tipY-topY,fill:'#efeae0',stroke:'#5d6874'},soilDyn);
+  S.joints.forEach(j=>{const y=SG-(j-S.depth)*SK;if(y>topY&&y<tipY)el('line',{x1:100,x2:120,y1:y,y2:y,stroke:'#1c2530','stroke-width':2},soilDyn);});
+  el('line',{x1:60,x2:160,y1:tipY,y2:tipY,stroke:'#e0601b','stroke-dasharray':'4 3'},soilDyn);
+  el('text',{x:124,y:tipY-4,'font-size':11,fill:'#e0601b','font-weight':600},soilDyn).textContent=fmt(S.depth,1)+' ม.';
+}
+// chart
+const CH=$('#chart');let chDyn;const cx0=50,cy0=24,cw=450,chh=230;
+function buildChart(){
+  CH.innerHTML='';const g=el('g',{},CH);chDyn=el('g',{},CH);
+  const fmax=S.c.cap*1.1;
+  for(let f=0;f<=fmax;f+=S.c.cap>200?50:20){const x=cx0+f/fmax*cw;el('line',{x1:x,x2:x,y1:cy0,y2:cy0+chh,stroke:'#eee'},g);el('text',{x,y:cy0-6,'text-anchor':'middle','font-size':10,fill:'#5d6874'},g).textContent=f;}
+  for(let d=0;d<=30;d+=5){const y=cy0+d/30*chh;el('line',{x1:cx0,x2:cx0+cw,y1:y,y2:y,stroke:'#eee'},g);el('text',{x:cx0-6,y:y+4,'text-anchor':'end','font-size':10,fill:'#5d6874'},g).textContent=d;}
+  el('text',{x:cx0+cw,y:cy0+chh+18,'text-anchor':'end','font-size':11,fill:'#5d6874'},g).textContent='แรงกด (ตัน) →';
+  el('text',{x:8,y:cy0+chh+18,'font-size':11,fill:'#5d6874'},g).textContent='ลึก (ม.) ↓';
+  const xt=cx0+Math.min(S.target,fmax)/fmax*cw, xc=cx0+S.c.cap/fmax*cw;
+  el('line',{x1:xt,x2:xt,y1:cy0,y2:cy0+chh,stroke:'#2c8a57','stroke-dasharray':'6 4','stroke-width':2},g);
+  el('text',{x:xt-4,y:cy0+chh-6,'text-anchor':'end','font-size':11,fill:'#2c8a57'},g).textContent='เป้าหมาย';
+  el('line',{x1:xc,x2:xc,y1:cy0,y2:cy0+chh,stroke:'#c4372b','stroke-width':2},g);
+  el('text',{x:xc-4,y:cy0+14,'text-anchor':'end','font-size':11,fill:'#c4372b'},g).textContent='พิกัดเครื่อง';
+  // ghost expected curve
+  let d='';for(let z=0;z<=30;z+=0.25){const f=Math.min(resist(z,S.c)/G,fmax);d+=(z?'L':'M')+(cx0+f/fmax*cw)+' '+(cy0+z/30*chh);}
+  el('path',{d,fill:'none',stroke:'#ccc','stroke-dasharray':'3 3'},g);
+}
+function drawChart(){
+  chDyn.innerHTML='';const fmax=S.c.cap*1.1;
+  if(S.trace.length>1){let d='';S.trace.forEach((p,i)=>{d+=(i?'L':'M')+(cx0+Math.min(p[1],fmax)/fmax*cw).toFixed(1)+' '+(cy0+p[0]/30*chh).toFixed(1);});
+    el('path',{d,fill:'none',stroke:'#e0601b','stroke-width':2.5},chDyn);}
+  el('circle',{cx:cx0+Math.min(S.force||0,fmax)/fmax*cw,cy:cy0+S.depth/30*chh,r:5,fill:'#e0601b'},chDyn);
+}
+// gauge
+const GA=$('#gauge');
+function drawGauge(){
+  GA.innerHTML='';const cx=110,cy=110,r=90,max=30;
+  const ang=v=>Math.PI*(1-v/max);
+  const arc=(a,b,col)=>{const p1=[cx+r*Math.cos(ang(a)),cy-r*Math.sin(ang(a))],p2=[cx+r*Math.cos(ang(b)),cy-r*Math.sin(ang(b))];el('path',{d:`M${p1} A${r} ${r} 0 0 1 ${p2}`,stroke:col,'stroke-width':12,fill:'none'},GA);};
+  arc(0,20,'#cfd8e2');arc(20,25,'#f2b705');arc(25,30,'#c4372b');
+  for(let v=0;v<=30;v+=5){const a=ang(v);el('text',{x:cx+(r-22)*Math.cos(a),y:cy-(r-22)*Math.sin(a)+4,'text-anchor':'middle','font-size':10,fill:'#1c2530'},GA).textContent=v;}
+  const v=Math.min(max,pressureMPa(S.force||0));const a=ang(v);
+  el('line',{x1:cx,y1:cy,x2:cx+(r-8)*Math.cos(a),y2:cy-(r-8)*Math.sin(a),stroke:'#1c2530','stroke-width':3,'stroke-linecap':'round'},GA);
+  el('circle',{cx,cy,r:6,fill:'#1c2530'},GA);
+  el('text',{x:cx,y:cy-28,'text-anchor':'middle','font-size':11,fill:'#5d6874'},GA).textContent='MPa';
+}
+reset();
+
+/* ================= CLAMP ================= */
+const CS=$('#clampSvg');let clampOn=true;
+function drawClamp(){
+  CS.innerHTML='';const shape=$('#selShape').value;
+  el('rect',{x:40,y:30,width:300,height:200,rx:10,fill:'#f6d3bd',stroke:'#e0601b','stroke-width':3},CS);
+  el('text',{x:48,y:24,'font-size':12,fill:'#5d6874'},CS).textContent='มุมมองด้านบนของกล่องจับ';
+  const s=90,cx=170,cy=130,gap=clampOn?0:16;
+  if(shape==='sq')el('rect',{x:cx-s/2,y:cy-s/2,width:s,height:s,fill:'#d9d4c8',stroke:'#8a8578','stroke-width':2},CS);
+  else{el('circle',{cx,cy,r:s/2,fill:'#d9d4c8',stroke:'#8a8578','stroke-width':2},CS);el('circle',{cx,cy,r:s/2-14,fill:'#fff',stroke:'#8a8578'},CS);}
+  // passive plate left
+  const pl=shape==='sq'?`M${cx-s/2-18} ${cy-40} h18 v80 h-18z`:`M${cx-s/2-18} ${cy-40} h10 q 12 40 0 80 h-10z`;
+  el('path',{d:pl,fill:'#1c2530'},CS);
+  el('text',{x:cx-s/2-60,y:cy+66,'font-size':11,fill:'#1c2530'},CS).textContent='แผ่นจับ Passive';
+  // active plate right + cylinder
+  const ax=cx+s/2+gap;
+  const ap=shape==='sq'?`M${ax} ${cy-40} h18 v80 h-18z`:`M${ax+8} ${cy-40} h10 v80 h-10 q -12 -40 0 -80z`;
+  el('path',{d:ap,fill:'#1c2530'},CS);
+  el('rect',{x:ax+18,y:cy-8,width:300-ax-18+40-10,height:16,fill:'#c9d7e8',stroke:'#8fa6c2'},CS);
+  el('rect',{x:330,y:cy-28,width:70,height:56,fill:'#2e6bb3'},CS);
+  el('text',{x:365,y:cy+44,'text-anchor':'middle','font-size':11,fill:'#1c2530'},CS).textContent='กระบอกหนีบ';
+  if(clampOn){el('path',{d:`M ${ax+40} ${cy-46} l -24 0 m 0 0 l 8 -5 m -8 5 l 8 5`,stroke:'#e0601b','stroke-width':3,fill:'none'},CS);
+    el('text',{x:ax+28,y:cy-54,'font-size':12,fill:'#e0601b','font-weight':600},CS).textContent='N';
+    el('path',{d:`M ${cx-s/2-40} ${cy-46} l 24 0 m 0 0 l -8 -5 m 8 5 l -8 5`,stroke:'#e0601b','stroke-width':3,fill:'none'},CS);
+    el('text',{x:cx-s/2-46,y:cy-54,'font-size':12,fill:'#e0601b','font-weight':600},CS).textContent='N';}
+  el('text',{x:cx,y:cy+4,'text-anchor':'middle','font-size':12,fill:'#1c2530'},CS).textContent='เสาเข็ม';
+  const F=+$('#rngCF').value,mu=+$('#rngMu').value/100,N=F/(2*mu);
+  $('#cfv').textContent=F;$('#muv').textContent=mu.toFixed(2);$('#cN').textContent=fmt(N,0)+' ตัน';$('#cRatio').textContent='= '+fmt(N/F,2)+' เท่าของแรงกด (ต่อด้าน)';
+}
+$('#bClamp').onclick=()=>{clampOn=!clampOn;drawClamp();};
+['#selShape','#rngCF','#rngMu'].forEach(s=>$(s).addEventListener('input',drawClamp));
+drawClamp();
+
+/* ================= WALK ================= */
+const WT=$('#walkTop'),WS=$('#walkSide');
+const STEPS={
+ long:{t:'เดินตามยาว (Longitudinal)',s:[
+   ['ยืดกระบอกขาค้ำ → ลองบูทแตะพื้น ตัวเครื่องยกขึ้น ช็อตบูทลอย','long',null],
+   ['ยืดกระบอกเลื่อนตามยาว → ตัวเครื่องเลื่อนไปตามรางบนลองบูท (ช็อตบูทติดไปกับตัวเครื่อง)','long','bodyX'],
+   ['หดกระบอกขาค้ำ → ตัวเครื่องลดลง ช็อตบูทแตะพื้น ลองบูทลอยขึ้น','short',null],
+   ['หดกระบอกเลื่อนตามยาว → ดึงลองบูทตามมาข้างหน้า ครบ 1 ก้าว','short','longReset']]},
+ lat:{t:'เดินด้านข้าง (Transverse)',s:[
+   ['หดกระบอกขาค้ำ → ช็อตบูทรับน้ำหนัก ลองบูทลอย','short',null],
+   ['ยืดกระบอกเลื่อนด้านข้าง → ตัวเครื่องเลื่อนไปด้านข้างบนช็อตบูท (ลองบูทติดไปด้วย)','short','bodyY'],
+   ['ยืดกระบอกขาค้ำ → ลองบูทแตะพื้น ช็อตบูทลอย','long',null],
+   ['หดกระบอกเลื่อนด้านข้าง → ดึงช็อตบูทตามมา ครบ 1 ก้าว','long','shortReset']]},
+ rot:{t:'หมุนตัวเครื่อง (Slewing)',s:[
+   ['หดกระบอกขาค้ำ → ช็อตบูทรับน้ำหนัก ลองบูทลอย','short',null],
+   ['กระบอกหมุนดันโต๊ะหมุน → ตัวเครื่อง (และลองบูทที่ลอยอยู่) หมุนไปครั้งละไม่กี่องศา','short','bodyR'],
+   ['ยืดกระบอกขาค้ำ → ลองบูทแตะพื้น ช็อตบูทลอย','long',null],
+   ['หมุนช็อตบูทกลับให้ตรงกับตัวเครื่อง ครบ 1 รอบ','long','shortReset']]}
+};
+let W;const STR=70, ROT=10*Math.PI/180;
+function wReset(mode){W={mode:mode||(W&&W.mode)||'long',i:-1,ground:'short',body:{x:320,y:190,r:0},lb:{x:320,y:190,r:0},sb:{x:320,y:190,r:0},anim:null,auto:false,tm:null};
+  if(W.mode==='long'||W.mode==='lat'){} renderSteps();drawWalk();}
+function renderSteps(){const d=STEPS[W.mode];$('#wTitle').textContent=d.t;$('#wSteps').innerHTML=d.s.map((s,i)=>`<li class="${i===W.i?'on':(i<W.i?'done':'')}">${s[0]}</li>`).join('');}
+function pose(o){return {x:o.x,y:o.y,r:o.r};}
+function wStep(){
+  if(W.anim)return;const d=STEPS[W.mode];W.i=(W.i+1)%4;const [txt,ground,act]=d.s[W.i];
+  // wrap around visible space
+  const from={b:pose(W.body),l:pose(W.lb),s:pose(W.sb),h:W.ground==='long'?1:0};
+  const to={b:pose(W.body),l:pose(W.lb),s:pose(W.sb),h:ground==='long'?1:0};
+  const c=Math.cos(W.body.r),s=Math.sin(W.body.r);
+  if(act==='bodyX'){to.b.x+=STR*c;to.b.y+=STR*s;to.s.x+=STR*c;to.s.y+=STR*s;}
+  if(act==='bodyY'){to.b.x+=-STR*0.6*s;to.b.y+=STR*0.6*c;to.l.x+=-STR*0.6*s;to.l.y+=STR*0.6*c;}
+  if(act==='bodyR'){to.b.r+=ROT;to.l.r+=ROT;}
+  if(act==='longReset'){to.l=pose(to.b);}
+  if(act==='shortReset'){to.s=pose(to.b);}
+  W.ground=ground;W.anim={from,to,t:0};renderSteps();
+  requestAnimationFrame(wAnim);
+}
+function lerpP(a,b,t){return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,r:a.r+(b.r-a.r)*t};}
+let wl=0;
+function wAnim(ts){const A=W.anim;if(!A)return;const dt=wl?(ts-wl)/1000:0;wl=ts;A.t=Math.min(1,A.t+dt/0.9);const t=smooth(A.t);
+  W.body=lerpP(A.from.b,A.to.b,t);W.lb=lerpP(A.from.l,A.to.l,t);W.sb=lerpP(A.from.s,A.to.s,t);W.h=A.from.h+(A.to.h-A.from.h)*t;drawWalk();
+  if(A.t<1)requestAnimationFrame(wAnim);else{W.anim=null;wl=0;
+    // recenter if drifting out
+    const dx=W.body.x>470?-STR*3:(W.body.x<170?STR*3:0), dy=W.body.y>260?-STR*0.6*3:(W.body.y<120?STR*0.6*3:0);
+    if((dx||dy)&&W.i===3){[W.body,W.lb,W.sb].forEach(o=>{o.x+=dx;o.y+=dy;});W.shift=(W.shift||0);}
+    if(W.mode==='rot'&&W.i===3&&Math.abs(W.body.r)>=Math.PI*2/3){[W.body,W.lb,W.sb].forEach(o=>o.r=0);}
+    drawWalk();
+    if(W.auto)W.tm=setTimeout(wStep,450);}}
+function drawWalk(){
+  WT.innerHTML='';
+  // grid
+  for(let x=0;x<=640;x+=40)el('line',{x1:x,x2:x,y1:0,y2:380,stroke:'#f0ece2'},WT);
+  for(let y=0;y<=380;y+=40)el('line',{x1:0,x2:640,y1:y,y2:y,stroke:'#f0ece2'},WT);
+  const h=W.h!==undefined?W.h:(W.ground==='long'?1:0);
+  const grp=(p)=>el('g',{transform:`translate(${p.x} ${p.y}) rotate(${p.r*180/Math.PI})`},WT);
+  const style=(on,col)=>on?{fill:col,stroke:'#1c2530','stroke-width':1.5}:{fill:'none',stroke:col,'stroke-width':2.5,'stroke-dasharray':'7 5'};
+  // short boats (under body)
+  const sOn=h<0.5;const gs=grp(W.sb);
+  [-110,110].forEach(x=>{const r=el('rect',Object.assign({x:x-22,y:-95,width:44,height:190,rx:5},style(sOn,'#a36a2c')),gs);});
+  // long boats
+  const lOn=h>=0.5;const gl=grp(W.lb);
+  [-118,118].forEach(y=>el('rect',Object.assign({x:-250,y:y-16,width:500,height:32,rx:5},style(lOn,'#3d4a58')),gl));
+  // body
+  const gb=grp(W.body);
+  el('rect',{x:-190,y:-90,width:380,height:180,rx:8,fill:'rgba(95,113,132,.55)',stroke:'#1c2530','stroke-width':2},gb);
+  el('rect',{x:-30,y:-30,width:60,height:60,fill:'#e0601b',stroke:'#1c2530'},gb);
+  el('text',{x:0,y:5,'text-anchor':'middle','font-size':11,fill:'#fff'},gb).textContent='กล่องจับ';
+  [[-180,-118],[180,-118],[-180,118],[180,118]].forEach(([x,y])=>el('circle',{cx:x,cy:y,r:9,fill:'#2e6bb3',stroke:'#1c2530'},gb));
+  el('path',{d:'M 150 0 l 26 0 m 0 0 l -8 -6 m 8 6 l -8 6',stroke:'#1c2530','stroke-width':2,fill:'none'},gb);
+  el('text',{x:10,y:-60,'font-size':11,fill:'#1c2530','text-anchor':'middle'},gb).textContent='ตัวเครื่อง';
+  // legend
+  el('text',{x:10,y:372,'font-size':12,fill:'#3d4a58'},WT).textContent='■ ลองบูท';
+  el('text',{x:90,y:372,'font-size':12,fill:'#a36a2c'},WT).textContent='■ ช็อตบูท';
+  el('text',{x:180,y:372,'font-size':12,fill:'#2e6bb3'},WT).textContent='● กระบอกขาค้ำ';
+  el('text',{x:630,y:372,'font-size':12,fill:'#1c2530','text-anchor':'end'},WT).textContent=h>=0.5?'รับน้ำหนักที่: ลองบูท':'รับน้ำหนักที่: ช็อตบูท';
+  // side view
+  WS.innerHTML='';const g=110;el('rect',{x:0,y:g,width:640,height:20,fill:'#cbbf9f'},WS);
+  const bodyLift=h*18; const bx=320+(W.body.x-320)*0.6;
+  const lx=320+(W.lb.x-320)*0.6, sx=320+(W.sb.x-320)*0.6;
+  // long boat: grounded when h=1, else lifted by (1-h)*14
+  const ly=g-14-(1-h)*14;
+  el('rect',{x:lx-250,y:ly,width:500,height:14,rx:3,fill:'#3d4a58'},WS);
+  const by=g-60-bodyLift;
+  // short boats attached to body: grounded at h=0
+  const sy=g-12-h*16;
+  [-110,110].forEach(d=>{el('rect',{x:sx+d*0.9-28,y:sy,width:56,height:12,rx:2,fill:'#a36a2c'},WS);});
+  [-180,180].forEach(d=>{const x=bx+d;el('rect',{x:x-8,y:by+20,width:16,height:ly-(by+20),fill:'#2e6bb3'},WS);});
+  el('rect',{x:bx-200,y:by,width:400,height:24,fill:'#5f7184',stroke:'#1c2530'},WS);
+  el('rect',{x:bx-170,y:by-22,width:120,height:22,fill:'#8e9cab',stroke:'#1c2530'},WS);el('rect',{x:bx+50,y:by-22,width:120,height:22,fill:'#8e9cab',stroke:'#1c2530'},WS);
+  el('rect',{x:bx-30,y:by-40,width:60,height:40,fill:'none',stroke:'#1c2530','stroke-width':3},WS);
+}
+$$('[data-mode]').forEach(b=>b.onclick=()=>{$$('[data-mode]').forEach(x=>x.classList.toggle('on',x===b));if(W.tm)clearTimeout(W.tm);wReset(b.dataset.mode);$('#wAuto').textContent='▶ อัตโนมัติ';});
+$('#wStep').onclick=()=>{W.auto=false;$('#wAuto').textContent='▶ อัตโนมัติ';wStep();};
+$('#wAuto').onclick=()=>{W.auto=!W.auto;$('#wAuto').textContent=W.auto?'⏸ หยุด':'▶ อัตโนมัติ';if(W.auto&&!W.anim)wStep();else if(!W.auto&&W.tm)clearTimeout(W.tm);};
+$('#wReset').onclick=()=>{if(W.tm)clearTimeout(W.tm);wReset();$('#wAuto').textContent='▶ อัตโนมัติ';};
+wReset('long');
+
+/* ================= HYDRAULIC ================= */
+const HY=$('#hydSvg');
+const FUN=[
+ {k:'press',n:'กดเสา',act:'กระบอกกด',d:'น้ำมันแรงดันเข้าด้านหัวกระบอกกด ดันกล่องจับลง น้ำมันด้านก้านไหลกลับถัง เมื่อสลับวาล์วจะยกกล่องจับขึ้น (ด้านก้านพื้นที่น้อยกว่า → กลับเร็วกว่า) เกจที่ต่อกับสายนี้คือเกจที่ใช้อ่านแรงกดเสาเข็ม',gauge:true},
+ {k:'clamp',n:'หนีบเสา',act:'กระบอกหนีบ',d:'น้ำมันดันแผ่นจับเข้าหนีบเสา มีเช็ควาล์ว/ระบบรักษาแรงดัน (บางรุ่นมี Accumulator) ให้แรงหนีบคงที่ตลอดช่วงกด แม้วาล์วกลับตำแหน่งกลาง',acc:true},
+ {k:'leg',n:'ขาค้ำ',act:'ขาค้ำ ×4',d:'ยืด–หดพร้อมกัน 4 ต้น เพื่อสลับการรับน้ำหนักระหว่างลองบูท/ช็อตบูท และปรับระดับเครื่อง มักมีวาล์วล็อก (pilot check) กันตัวเครื่องทรุดถ้าท่อแตก'},
+ {k:'long',n:'ลองบูท',act:'เลื่อนตามยาว',d:'ดันตัวเครื่องไปตามรางบนลองบูท หรือดึงลองบูทตามมา ใช้สำหรับเดินหน้า–ถอยหลัง'},
+ {k:'short',n:'ช็อตบูท',act:'เลื่อนข้าง/หมุน',d:'เลื่อนตัวเครื่องไปด้านข้างบนช็อตบูท หรือหมุนโต๊ะหมุนเพื่อเปลี่ยนทิศทางเครื่อง'},
+ {k:'crane',n:'เครน',act:'รอก/บูม',d:'วงจรแยกขับมอเตอร์ไฮดรอลิกของรอกและกระบอกยกบูม ใช้ยกเสาเข้าตำแหน่ง'}
+];
+let hySel='press';
+function drawHyd(){
+  HY.innerHTML='';
+  const hot='#e0601b',ret='#2e6bb3',idle='#c9c3b5';
+  const fi=FUN.findIndex(f=>f.k===hySel);
+  // tank
+  el('rect',{x:20,y:330,width:130,height:60,fill:'#e8f0fa',stroke:'#1c2530'},HY);
+  el('rect',{x:20,y:352,width:130,height:38,fill:'#bcd3ec'},HY);
+  el('text',{x:85,y:410,'text-anchor':'middle','font-size':12,fill:'#1c2530'},HY).textContent='ถังน้ำมัน + ไส้กรอง';
+  // motor & pump
+  el('circle',{cx:60,cy:250,r:24,fill:'#2c8a57',stroke:'#1c2530'},HY);el('text',{x:60,y:255,'text-anchor':'middle','font-size':14,fill:'#fff','font-weight':700},HY).textContent='M';
+  el('line',{x1:84,y1:250,x2:96,y2:250,stroke:'#1c2530','stroke-width':4},HY);
+  el('circle',{cx:120,cy:250,r:24,fill:'#fff',stroke:'#1c2530','stroke-width':2},HY);el('path',{d:'M120 230 l-9 16 h18z',fill:'#1c2530'},HY);
+  el('text',{x:60,y:212,'text-anchor':'middle','font-size':11,fill:'#1c2530'},HY).textContent='มอเตอร์';
+  el('text',{x:120,y:290,'text-anchor':'middle','font-size':11,fill:'#1c2530'},HY).textContent='ปั๊ม';
+  el('path',{d:'M120 274 L120 330',stroke:hot,'stroke-width':4,fill:'none'},HY);
+  // supply line to header
+  el('path',{d:'M120 226 L120 40 L690 40',stroke:hot,'stroke-width':4,fill:'none',class:'flow'},HY);
+  // relief valve
+  el('rect',{x:150,y:120,width:40,height:30,fill:'#fff',stroke:'#1c2530'},HY);el('path',{d:'M155 145 l30 -20',stroke:'#1c2530'},HY);
+  el('path',{d:'M120 135 L150 135',stroke:hot,'stroke-width':3},HY);el('path',{d:'M190 135 L200 135 L200 300 L150 300 L150 330',stroke:ret,'stroke-width':2,fill:'none','stroke-dasharray':'4 3'},HY);
+  el('text',{x:205,y:130,'font-size':11,fill:'#1c2530'},HY).textContent='วาล์วนิรภัย';
+  // return header
+  el('path',{d:'M690 170 L230 170 L230 360 L150 360',stroke:ret,'stroke-width':4,fill:'none',class:'flow'},HY);
+  FUN.forEach((f,i)=>{
+    const x=260+i*80,sel=i===fi;
+    el('path',{d:`M${x+20} 40 L${x+20} 70`,stroke:sel?hot:idle,'stroke-width':sel?4:3},HY);
+    el('path',{d:`M${x+40} 110 L${x+40} 170`,stroke:sel?ret:idle,'stroke-width':sel?4:3},HY);
+    const v=el('g',{style:'cursor:pointer'},HY);v.onclick=()=>{hySel=f.k;drawHyd();};
+    el('rect',{x:x,y:70,width:60,height:40,rx:3,fill:sel?'#fff1e8':'#fff',stroke:sel?hot:'#1c2530','stroke-width':sel?2.5:1.2},v);
+    el('path',{d:`M${x+20} 75 l0 30 m-5 -8 l5 8 l5 -8 M${x+40} 105 l0 -30 m-5 8 l5 -8 l5 8`,stroke:'#1c2530',fill:'none'},v);
+    el('text',{x:x+30,y:62,'text-anchor':'middle','font-size':11,fill:'#1c2530','font-weight':sel?700:400},HY).textContent=f.n;
+    // lines to actuator
+    const ya=250;
+    el('path',{d:`M${x+15} 110 L${x+15} 135 L${x+15} ${ya}`,stroke:sel?hot:idle,'stroke-width':sel?4:2.5,fill:'none',class:sel?'flow':''},HY);
+    el('path',{d:`M${x+45} ${ya+80} L${x+52} ${ya+80} L${x+52} 175 L${x+40} 175`,stroke:sel?ret:idle,'stroke-width':sel?3:2,fill:'none'},HY);
+    // actuator
+    if(f.k==='crane'){el('circle',{cx:x+30,cy:ya+40,r:22,fill:sel?'#fde6d6':'#fff',stroke:'#1c2530','stroke-width':1.5},HY);el('path',{d:`M${x+30} ${ya+22} l-8 14 h16z`,fill:'#1c2530'},HY);
+      el('path',{d:`M${x+15} ${ya} L${x+15} ${ya+40} L${x+8} ${ya+40}`,stroke:sel?hot:idle,'stroke-width':2,fill:'none'},HY);
+      el('path',{d:`M${x+52} ${ya+40} L${x+45} ${ya+80}`,stroke:'none'},HY);}
+    else{el('rect',{x:x+8,y:ya,width:44,height:80,fill:sel?'#2e6bb3':'#dfe6ee',stroke:'#1c2530'},HY);
+      el('rect',{x:x+10,y:ya+(sel?40:20),width:40,height:8,fill:'#1c2530'},HY);
+      el('rect',{x:x+26,y:ya+(sel?48:28),width:8,height:sel?60:80,fill:'#9aa6b2'},HY);}
+    el('text',{x:x+30,y:ya+128-(f.k==='crane'?40:0)+ (f.k==='crane'?0:18),'text-anchor':'middle','font-size':10,fill:'#1c2530'},HY).textContent=f.act;
+    if(f.gauge){el('circle',{cx:x+-2,cy:150,r:11,fill:'#fff',stroke:'#1c2530'},HY);el('line',{x1:x-2,y1:150,x2:x+5,y2:143,stroke:hot,'stroke-width':2},HY);el('line',{x1:x+9,y1:150,x2:x+15,y2:150,stroke:'#1c2530'},HY);
+      el('text',{x:x-2,y:178+0,'text-anchor':'middle','font-size':9,fill:'#1c2530'},HY).textContent='';}
+    if(f.acc){el('ellipse',{cx:x+2,cy:200,rx:10,ry:16,fill:'#fff',stroke:'#1c2530'},HY);el('line',{x1:x+12,y1:200,x2:x+15,y2:200,stroke:'#1c2530'},HY);el('text',{x:x+2,y:228,'text-anchor':'middle','font-size':9,fill:'#1c2530'},HY).textContent='ACC';}
+  });
+  el('text',{x:470,y:30,'font-size':11,fill:hot},HY).textContent='สายแรงดันจากปั๊ม';
+  el('text',{x:470,y:188,'font-size':11,fill:ret},HY).textContent='สายไหลกลับถัง';
+  el('text',{x:230,y:150,'font-size':10,fill:'#5d6874'},HY).textContent='เกจ';
+  const f=FUN[fi];
+  $('#hydInfo').innerHTML=`<h3>${f.n} → ${f.act}</h3><p>${f.d}</p>`;
+  $$('#hydBtns button').forEach(b=>b.classList.toggle('on',b.dataset.k===hySel));
+}
+FUN.forEach(f=>{const b=document.createElement('button');b.className='btn';b.textContent=f.n;b.dataset.k=f.k;b.onclick=()=>{hySel=f.k;drawHyd();};$('#hydBtns').appendChild(b);});
+drawHyd();
+
+/* ================= CALC ================= */
+function calc(){
+  const D=+$('#cD').value/1000,n=+$('#cn').value,P=+$('#cP').value,T=+$('#cT').value;
+  const A=n*Math.PI*D*D/4;const FkN=P*1e6*A/1000;
+  $('#cA').textContent=fmt(A*1e4,0)+' cm²';
+  $('#cF').textContent=fmt(FkN/G,1)+' ตัน';$('#cFkN').textContent='= '+fmt(FkN,0)+' kN';
+  const Preq=A>0?T*G*1000/A/1e6:0;
+  $('#cPreq').textContent=fmt(Preq,1)+' MPa';$('#cPreq2').textContent='≈ '+fmt(Preq*10,0)+' bar ≈ '+fmt(Preq*10.2,0)+' kg/cm²';
+}
+['#cD','#cn','#cP','#cT'].forEach(s=>$(s).addEventListener('input',calc));calc();
+
+/* nav highlight */
+const secs=$$('main section, footer#sources');
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){$$('nav.toc a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));}})},{rootMargin:'-40% 0px -55% 0px'});
+secs.forEach(s=>io.observe(s));
+/* ================= PILE SHAPES (3D) ================= */
+function pileShape(type,b){
+  const T=window.THREE,s=new T.Shape(),h=b/2;
+  if(type==='I'){const d=0.33*b,h1=0.66*b/2,h2=0.46*b/2;
+    s.moveTo(-h,-h);s.lineTo(h,-h);s.lineTo(h,-h1);s.lineTo(h-d,-h2);s.lineTo(h-d,h2);s.lineTo(h,h1);s.lineTo(h,h);
+    s.lineTo(-h,h);s.lineTo(-h,h1);s.lineTo(-h+d,h2);s.lineTo(-h+d,-h2);s.lineTo(-h,-h1);s.lineTo(-h,-h);}
+  else if(type==='spun'){s.absarc(0,0,h,0,Math.PI*2,false);const ho=new T.Path();ho.absarc(0,0,h*0.62,0,Math.PI*2,true);s.holes.push(ho);}
+  else{s.moveTo(-h,-h);s.lineTo(h,-h);s.lineTo(h,h);s.lineTo(-h,h);s.lineTo(-h,-h);}
+  return s;
+}
+function pileGeom(type,b,L){const g=new THREE.ExtrudeGeometry(pileShape(type,b),{depth:L,bevelEnabled:false,curveSegments:28});g.rotateX(-Math.PI/2);g.translate(0,-L,0);return g;}
+
+/* ================= 3D MACHINE ================= */
+function init3D(){
+  const host=$('#three');
+  if(!window.THREE||!THREE.OrbitControls){host.innerHTML='<div style="padding:24px" class="note">โหลดไลบรารี 3 มิติไม่สำเร็จ (ต้องเชื่อมต่ออินเทอร์เน็ต) — ส่วนอื่นของหน้ายังใช้งานได้</div>';return;}
+  const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(renderer.domElement);
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9e5da);scene.fog=new THREE.Fog(0xe9e5da,45,90);
+  const cam=new THREE.PerspectiveCamera(40,1,0.1,300);cam.position.set(16,10,17);
+  const ctr=new THREE.OrbitControls(cam,renderer.domElement);ctr.target.set(0,3,0);ctr.enableDamping=true;ctr.maxPolarAngle=Math.PI*0.49;ctr.minDistance=3;ctr.maxDistance=60;
+  scene.add(new THREE.HemisphereLight(0xffffff,0x8a7f66,0.75));
+  const sun=new THREE.DirectionalLight(0xffffff,0.85);sun.position.set(12,20,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+  Object.assign(sun.shadow.camera,{left:-16,right:16,top:16,bottom:-16,near:1,far:60});scene.add(sun);
+  const M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.7,metalness:.12},o||{}));
+  const mat={dark:M(0x3d4a58),brown:M(0xa36a2c),steel:M(0x6b7c8f),grey:M(0x9aa6b2),ink:M(0x1f2833),blue:M(0x2e6bb3,{metalness:.4,roughness:.4}),rod:M(0xdfe6ee,{metalness:.8,roughness:.2}),
+    orange:M(0xe0601b),yellow:M(0xf2b705),green:M(0x2c8a57),glass:M(0x9fc3e0,{metalness:.3,roughness:.1}),pile:M(0xd8d2c4,{roughness:.9})};
+  function box(w,h,d,m,x,y,z,p){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;(p||scene).add(o);return o;}
+  function cyl(r,h,m,x,y,z,p){const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,28),m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;(p||scene).add(o);return o;}
+  const groundMat=M(0xc9bd9b,{transparent:true,opacity:1});
+  const ground=box(70,0.2,70,groundMat,0,-0.1,0);ground.castShadow=false;
+  const grid=new THREE.GridHelper(70,35,0xb3a681,0xb3a681);grid.position.y=0.01;scene.add(grid);
+  // underground ruler + soil layers
+  const under=new THREE.Group();under.visible=false;scene.add(under);
+  [[0,12,0xbdb59a],[12,20,0x9c8d6d],[20,30,0xd8c27a]].forEach(([a,b,c])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(14,b-a,0.05),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.35,depthWrite:false}));m.position.set(0,-(a+b)/2,-3.2);under.add(m);});
+  for(let d=0;d<30;d++){const m=new THREE.Mesh(new THREE.BoxGeometry(.25,1,.25),new THREE.MeshBasicMaterial({color:d%2?0xffffff:0xc4372b}));m.position.set(1.6,-d-.5,0);under.add(m);}
+  // machine
+  const G=new THREE.Group();scene.add(G);
+  [-2.7,2.7].forEach(z=>box(12.5,.5,.9,mat.dark,0,.25,z,G));
+  [-3.4,3.4].forEach(x=>box(1.0,.4,4.0,mat.brown,x,.2,0,G));
+  // body with central opening (4 pieces)
+  box(4.6,.8,4.6,mat.steel,-3.5,1.5,0,G);box(4.6,.8,4.6,mat.steel,3.5,1.5,0,G);box(2.4,.8,1.6,mat.steel,0,1.5,-1.5,G);box(2.4,.8,1.6,mat.steel,0,1.5,1.5,G);
+  [[-5.4,-2.7],[5.4,-2.7],[-5.4,2.7],[5.4,2.7]].forEach(([x,z])=>{cyl(.24,1.1,mat.blue,x,.95,z,G);});
+  [-1,1].forEach(sd=>{for(let k=0;k<3;k++)box(2.6,.58,3.8-k*.3,mat.grey,sd*3.0,2.2+k*.6,0,G);});
+  [[-1.05,-1.05],[1.05,-1.05],[-1.05,1.05],[1.05,1.05]].forEach(([x,z])=>box(.32,5.4,.32,mat.ink,x,4.4,z,G));
+  [-1.05,1.05].forEach(z=>box(2.7,.5,.5,mat.ink,0,7.2,z,G));
+  [-1.05,1.05].forEach(x=>box(.5,.5,2.7,mat.ink,x,7.2,0,G));
+  const barrels=[-0.75,0.75].map(z=>cyl(.26,2.0,mat.blue,0,5.95,z,G));
+  const rods=[-0.75,0.75].map(z=>cyl(.11,1,mat.rod,0,4,z,G));
+  const clamp=new THREE.Group();G.add(clamp);
+  const cbp=[box(.5,.8,2.4,mat.orange,-.5,0,0,clamp),box(.5,.8,2.4,mat.orange,.5,0,0,clamp),box(.5,.8,.6,mat.orange,0,0,-.9,clamp),box(.5,.8,.6,mat.orange,0,0,.9,clamp)];
+  const cb={material:mat.orange};
+  const jaws=[-1,1].map(s=>box(.12,.6,.5,mat.ink,s*.3,0,0,clamp));
+  // crane
+  cyl(.28,1.5,mat.yellow,-5.4,2.65,1.9,G);
+  const bg=new THREE.Group();bg.position.set(-5.4,3.3,1.9);bg.rotation.z=-0.9;G.add(bg);box(9,.35,.35,mat.yellow,-4.5,0,0,bg);
+  const tip=new THREE.Vector3(-9,0,0);
+  cyl(.03,6,mat.ink,-5.4-9*Math.cos(0.9),3.3+9*Math.sin(0.9)-3,1.9,G);
+  box(.5,.4,.3,mat.ink,-5.4-9*Math.cos(0.9),3.3+9*Math.sin(0.9)-6,1.9,G);
+  // cab & power
+  box(1.8,1.8,1.8,mat.yellow,5.4,2.8,-1.6,G);box(1.84,.7,1.3,mat.glass,5.4,3.1,-1.6,G);
+  box(1.5,1.0,1.6,mat.green,-5.4,2.4,-1.6,G);box(.4,.9,.6,M(0xc4372b),4.3,2.35,-2.0,G);
+  // pile
+  let pileType='I',pile,L=12;const pileB={I:.26,sq:.30,spun:.40};
+  function makePile(){if(pile){G.remove(pile);pile.geometry.dispose();}pile=new THREE.Mesh(pileGeom(pileType,pileB[pileType],L),mat.pile);pile.castShadow=true;G.add(pile);
+    const b=pileB[pileType];jaws[0].position.x=-(b/2+.06);jaws[1].position.x=(b/2+.06);}
+  makePile();
+  // labels
+  const lblBox=document.createElement('div');lblBox.style.cssText='position:absolute;inset:0;pointer-events:none';host.appendChild(lblBox);
+  const LB=[['กล่องจับเสา',()=>new THREE.Vector3(0,clamp.position.y+.6,1.3)],['กระบอกกด',()=>new THREE.Vector3(0,6.6,.9)],['ตุ้มถ่วง',()=>new THREE.Vector3(-3,4.2,0)],['ตุ้มถ่วง',()=>new THREE.Vector3(3,4.2,0)],
+    ['ลองบูท',()=>new THREE.Vector3(4.5,.6,2.9)],['ช็อตบูท',()=>new THREE.Vector3(-3.4,.5,2.1)],['ขาค้ำ',()=>new THREE.Vector3(5.4,1.6,2.7)],['เครน',()=>new THREE.Vector3(-8.5,7.2,1.9)],
+    ['ห้องควบคุม',()=>new THREE.Vector3(5.4,4,-1.6)],['ชุดต้นกำลัง',()=>new THREE.Vector3(-5.4,3.2,-1.6)],['เสาเข็ม',()=>new THREE.Vector3(0,Math.min(L-st.depth,11)+.4,0)],['โครงกด',()=>new THREE.Vector3(1.1,7.7,1.1)]]
+    .map(([t,f])=>{const d=document.createElement('div');d.textContent=t;d.style.cssText='position:absolute;transform:translate(-50%,-100%);background:rgba(28,37,48,.85);color:#fff;font-size:12px;padding:1px 7px;border-radius:6px;white-space:nowrap';lblBox.appendChild(d);return {d,f};});
+  let showLbl=true;
+  // animation state
+  const TOP=4.6,STK=1.8,D={raise:1.1,clamp:.5,press:2.0,release:.4,new:1.6};
+  const st={ph:'raise',t:0,depth:0,cy:TOP,play:true};
+  function setPh(p){st.ph=p;st.t=0;$$('#phases3 span').forEach(s=>s.classList.toggle('on',s.dataset.ph===p));}
+  setPh('raise');
+  function update(dt){
+    st.t+=dt;
+    if(st.ph==='raise'){st.cy=Math.min(TOP,st.cy+STK*dt/D.raise);if(st.cy>=TOP){if(L-st.depth<TOP+.6)setPh('new');else setPh('clamp');}}
+    else if(st.ph==='clamp'){if(st.t>=D.clamp)setPh('press');}
+    else if(st.ph==='press'){const dz=STK*dt/D.press;st.cy-=dz;st.depth+=dz;if(st.cy<=TOP-STK){st.cy=TOP-STK;setPh('release');}}
+    else if(st.ph==='release'){if(st.t>=D.release)setPh('raise');}
+    else if(st.ph==='new'){if(st.t>=D.new){st.depth=0;setPh('clamp');}}
+  }
+  function pose(){
+    clamp.position.y=st.cy;
+    const clamped=st.ph==='press'||(st.ph==='clamp'&&st.t>.25);
+    cb.material.emissive=new THREE.Color(clamped?0x5a1e00:0x000000);
+    jaws.forEach(j=>j.scale.set(1,1,1));
+    rods.forEach(r=>{const top=4.95,bot=st.cy+.4;const len=Math.max(.05,top-bot);r.scale.y=len;r.position.y=bot+len/2;});
+    pile.position.y=(st.ph==='new'?L+Math.max(0,4*(1-st.t/D.new)):L)-st.depth - (st.ph==='new'?L:0) + (st.ph==='new'? L - 0 : 0);
+    if(st.ph==='new'){pile.position.y=L+3*(1-st.t/D.new);}
+    else pile.position.y=L-st.depth;
+    $('#t3msg').textContent=st.ph==='new'?'เสาต้นก่อนกดลงจนสุดช่วงที่จับได้ → ยกเสาท่อนใหม่ด้วยเครนเข้ากล่องจับ (ในงานจริงจะต่อท่อน/ใช้ตัวส่ง)':`ความลึกปลายเสา: ${st.depth.toFixed(1)} ม. · ส่วนที่โผล่: ${(L-st.depth).toFixed(1)} ม.`;
+  }
+  function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);renderer.domElement.style.width='100%';renderer.domElement.style.height='100%';cam.aspect=w/h;cam.updateProjectionMatrix();}
+  new ResizeObserver(resize).observe(host);resize();
+  let camTw=null;
+  const CAMS={wide:[[16,10,17],[0,3,0]],clamp:[[3.4,5.6,0.6],[0,3.6,0]],side:[[0,4.5,22],[0,3,0]],top:[[0.01,26,0.01],[0,0,0]],under:[[13,4,15],[0,-6,0]]};
+  function goCam(k){const [p,t]=CAMS[k];camTw={p0:cam.position.clone(),t0:ctr.target.clone(),p1:new THREE.Vector3(...p),t1:new THREE.Vector3(...t),k:0};}
+  $$('[data-cam]').forEach(b=>b.onclick=()=>goCam(b.dataset.cam));
+  let underOn=false;
+  $('#b3Under').onclick=()=>{underOn=!underOn;$('#b3Under').classList.toggle('on',underOn);under.visible=underOn;groundMat.opacity=underOn?.28:1;groundMat.depthWrite=!underOn;grid.visible=!underOn;ctr.maxPolarAngle=underOn?Math.PI*0.9:Math.PI*0.49;if(underOn)goCam('under');};
+  $('#b3Lbl').onclick=()=>{showLbl=!showLbl;$('#b3Lbl').classList.toggle('on',showLbl);lblBox.style.display=showLbl?'':'none';};
+  $('#b3Play').onclick=()=>{st.play=!st.play;$('#b3Play').textContent=st.play?'⏸ หยุด':'▶ เล่น';};
+  $('#s3Pile').onchange=()=>{pileType=$('#s3Pile').value;makePile();};
+  let visible=true;new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{}).observe(host);
+  let lt=0;const v=new THREE.Vector3();
+  function frame(ts){requestAnimationFrame(frame);if(!visible)return;const dt=lt?Math.min(.05,(ts-lt)/1000):0;lt=ts;
+    if(st.play)update(dt);pose();
+    if(camTw){camTw.k=Math.min(1,camTw.k+dt/0.9);const k=smooth(camTw.k);cam.position.lerpVectors(camTw.p0,camTw.p1,k);ctr.target.lerpVectors(camTw.t0,camTw.t1,k);if(camTw.k>=1)camTw=null;}
+    ctr.update();renderer.render(scene,cam);
+    if(showLbl){const w=host.clientWidth,h=host.clientHeight;LB.forEach(l=>{v.copy(l.f());v.project(cam);const vis=v.z<1&&Math.abs(v.x)<1.05&&Math.abs(v.y)<1.05;l.d.style.display=vis?'':'none';l.d.style.left=((v.x+1)/2*w)+'px';l.d.style.top=((1-v.y)/2*h)+'px';});}
+  }
+  requestAnimationFrame(frame);
+}
+init3D();
+
+/* ================= I-PILE ================= */
+function initI(){
+  const tb=$('#iTable');tb.innerHTML=Object.entries(IPILES).map(([k,q])=>`<tr><td>${k.replace('I','I-')}</td><td>${q.b.toFixed(2)} × ${q.b.toFixed(2)}</td><td>${q.A}</td><td>${q.p}</td><td>${q.w}</td><td>${q.s}</td></tr>`).join('');
+  let r3=null;
+  const host=$('#ithree');
+  if(window.THREE&&THREE.OrbitControls){
+    const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));host.appendChild(renderer.domElement);
+    const scene=new THREE.Scene();scene.background=new THREE.Color(0xf1eee6);
+    const cam=new THREE.PerspectiveCamera(35,1,.01,50);cam.position.set(1.1,1.9,1.5);
+    const ctr=new THREE.OrbitControls(cam,renderer.domElement);ctr.target.set(0,.45,0);ctr.autoRotate=true;ctr.autoRotateSpeed=1.4;ctr.enableDamping=true;
+    scene.add(new THREE.HemisphereLight(0xffffff,0x9a917c,.8));const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(3,5,2);scene.add(dl);
+    const mI=new THREE.MeshStandardMaterial({color:0xd8d2c4,roughness:.85}),mS=new THREE.MeshStandardMaterial({color:0xbfb7a6,roughness:.85});
+    const end=new THREE.MeshStandardMaterial({color:0x8e9cab,metalness:.6,roughness:.4});
+    let grp=new THREE.Group();scene.add(grp);
+    const lbl=[0,1].map(()=>{const d=document.createElement('div');d.style.cssText='position:absolute;transform:translate(-50%,-100%);background:rgba(28,37,48,.85);color:#fff;font-size:12px;padding:1px 7px;border-radius:6px;pointer-events:none';host.appendChild(d);return d;});
+    r3={build(b,key){scene.remove(grp);grp=new THREE.Group();const s=1.0;
+        const a=new THREE.Mesh(pileGeom('I',b,0.9),mI);a.position.set(-0.35,0.9,0);grp.add(a);
+        const c=new THREE.Mesh(pileGeom('sq',b,0.9),mS);c.position.set(0.35,0.9,0);grp.add(c);
+        scene.add(grp);lbl[0].textContent=key.replace('I','I-');lbl[1].textContent='สี่เหลี่ยม '+b.toFixed(2);},
+      frame(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);renderer.domElement.style.width='100%';renderer.domElement.style.height='100%';cam.aspect=w/h;cam.updateProjectionMatrix();ctr.update();renderer.render(scene,cam);
+        [[-0.35,1.0],[0.35,1.0]].forEach(([x,y],i)=>{const v=new THREE.Vector3(x,y,0).project(cam);lbl[i].style.left=((v.x+1)/2*w)+'px';lbl[i].style.top=((1-v.y)/2*h)+'px';});}};
+    let vis=true;new IntersectionObserver(es=>{vis=es[0].isIntersecting;}).observe(host);
+    (function loop(){requestAnimationFrame(loop);if(vis)r3.frame();})();
+  } else host.innerHTML='<div style="padding:20px" class="note">โหลดไลบรารี 3 มิติไม่สำเร็จ</div>';
+  function upd(){
+    const k=$('#iSize').value,q=IPILES[k],b=q.b,Lp=+$('#iLen').value||12,truck=+$('#iTruck').value||15;
+    const sqA=b*b*1e4,sqP=4*b*100,sqW=b*b*2400;
+    $('#iTitle').textContent=`${k.replace('I','I-')} เทียบกับสี่เหลี่ยมตัน ${b.toFixed(2)} × ${b.toFixed(2)} ม.`;
+    const row=(n,a,c,u)=>`<tr><td>${n}</td><td>${a}${u||''}</td><td>${c}${u||''}</td></tr>`;
+    const wI=q.w*Lp/1000,wS=sqW*Lp/1000;
+    $('#iCmp').innerHTML=row('พื้นที่หน้าตัด (ซม.²)',fmt(q.A,0),fmt(sqA,0))+row('เส้นรอบรูป (ซม.)',fmt(q.p,0),fmt(sqP,0))+row('เส้นรอบรูปต่อพื้นที่ (ซม./ซม.²)',fmt(q.p/q.A,3),fmt(sqP/sqA,3))
+      +row('น้ำหนัก (กก./ม.)',fmt(q.w,1),fmt(sqW,1))+row(`น้ำหนักต่อท่อน ${Lp} ม. (ตัน)`,fmt(wI,2),fmt(wS,2))+row(`จำนวนท่อนต่อเที่ยว (บรรทุก ${truck} ตัน)`,Math.floor(truck/wI),Math.floor(truck/wS));
+    $('#iTruckMsg').innerHTML=`เสา ${k.replace('I','I-')} เบากว่าเสาตันขนาดเดียวกัน <b>${fmt((1-q.A/sqA)*100,0)}%</b> แต่มีเส้นรอบรูปมากกว่า <b>${fmt((q.p/sqP-1)*100,0)}%</b> → รถ ${truck} ตันขนได้ <b>${Math.floor(truck/wI)} ท่อน</b> (เสาตัน ${Math.floor(truck/wS)} ท่อน) · ตรวจพิกัดความยาว/ความสูงกองบนรถตามกฎหมายด้วย`;
+    if(r3)r3.build(b,k);
+  }
+  ['#iSize','#iLen','#iTruck'].forEach(s=>$(s).addEventListener('input',upd));upd();
+}
+initI();
+
+/* ================= VERIFY ================= */
+const UNIT={ksc:{l:'kg/cm²',f:1,d:1},bar:{l:'bar',f:0.980665,d:1},mpa:{l:'MPa',f:0.0980665,d:2}};
+function V(){const u=$('#vUnit').value,pp=pileProps($('#vPile').value),D=(+$('#vBore').value)/10,n=+$('#vN').value;
+  const Acm=n*Math.PI*D*D/4;return {load:+$('#vLoad').value,sf:+$('#vSF').value,pp,u,U:UNIT[u],Acm,eff:(+$('#vEff').value||100)/100,minD:+$('#vMinD').value,soil:SOILS[$('#vSoil').value],fc:+$('#vFc').value,bore:+$('#vBore').value,n};}
+function g2t(g,v){return g/v.U.f*v.Acm*v.eff/1000;}     // gauge (unit) -> ton
+function t2g(t,v){return t*1000/(v.Acm*v.eff)*v.U.f;}   // ton -> gauge (unit)
+function depthFor(Ft,v){const c={p:v.pp.p,A:v.pp.A,soil:v.soil};for(let z=0.1;z<=40;z+=0.05){if(resist(z,c)/G>=Ft)return z;}return null;}
+function vCalc(){
+  const v=V(),F=v.load*v.sf,g=t2g(F,v),u=v.U.l;
+  $$('.uLbl').forEach(e=>e.textContent=u);
+  $('#vF').textContent=fmt(F,1)+' ตัน';$('#vG').textContent=fmt(g,v.U.d)+' '+u;
+  const d=depthFor(F,v);$('#vDep').textContent=d?('≈ '+fmt(d,1)+' ม.'):'> 40 ม.';
+  const stress=F*1000/(v.pp.A*1e4);$('#vStress').textContent=fmt(stress,0)+' ksc';$('#vStress2').textContent=`= ${fmt(stress/v.fc*100,0)}% ของ f'c ${v.fc} ksc`;
+  $('#vExplain').innerHTML=[
+    `<b>แรงกดสุดท้าย</b> = น้ำหนักปลอดภัย × ค่าความปลอดภัย = ${v.load} × ${v.sf} = <b>${fmt(F,1)} ตัน</b> (${fmt(F*1000,0)} กก.)`,
+    `<b>พื้นที่ลูกสูบรวม</b> = ${v.n} × π × (${fmt(v.bore/10,1)} ซม.)² ÷ 4 = <b>${fmt(v.Acm,1)} ซม.²</b>${v.eff!==1?` × ประสิทธิภาพ ${fmt(v.eff*100,0)}%`:''}`,
+    `<b>ค่าเกจ</b> = แรง ÷ พื้นที่ = ${fmt(F*1000,0)} ÷ ${fmt(v.Acm*v.eff,1)} = ${fmt(F*1000/(v.Acm*v.eff),1)} kg/cm²${v.u!=='ksc'?` = <b>${fmt(g,v.U.d)} ${u}</b>`:''}`,
+    `<b>ตรวจเครื่อง</b>: แรงกดพิกัดของรถกด และ น้ำหนักเครื่อง + ตุ้มถ่วง ต้องมากกว่า ${fmt(F,0)} ตัน พอสมควร (ไม่ควรกดใกล้พิกัดจนเครื่องลอย)`,
+    `<b>ตรวจเสา</b>: ความเค้นขณะกด ${fmt(stress,0)} ksc ต้องอยู่ในค่าที่ผู้ผลิต/วิศวกรยอมให้ และความลึกต้องไม่น้อยกว่า ${v.minD} ม. ตามแบบ`
+  ].map(s=>`<li>${s}</li>`).join('');
+  $('#vConv').innerHTML=[25,50,75,90,100].map(p=>{const t=F*p/100;return `<tr${p===100?' style="font-weight:700;background:#fff1e8"':''}><td>${p}%</td><td>${fmt(t,1)}</td><td>${fmt(t2g(t,v),v.U.d)} ${u}</td><td>${p===100?'แรงกดสุดท้าย → เริ่มคงแรง':p===90?'เตรียมชะลอ ระวังเกินเป้า':p===50?'= น้ำหนักปลอดภัย '+fmt(v.load,0)+' ตัน':''}</td></tr>`;}).join('');
+  $('#rType').value=v.pp.name;$('#rMach').value=`RG-01 / ${fmt(v.Acm,0)} ซม.² (${v.n}×Ø${v.bore})`;
+  $('#cTarget').value=fmt(F,1).replace(/,/g,'');$('#cMinD').value=v.minD;
+  renderRec();
+}
+['#vLoad','#vSF','#vPile','#vUnit','#vBore','#vN','#vEff','#vMinD','#vSoil','#vFc'].forEach(s=>$(s).addEventListener('input',vCalc));
+$$('#vTabs button').forEach(b=>b.onclick=()=>{$$('#vTabs button').forEach(x=>x.classList.toggle('on',x===b));$$('.vpanel').forEach(p=>p.hidden=p.dataset.vp!==b.dataset.vt);if(b.dataset.vt==='conf')confirmEval();if(b.dataset.vt==='slt')sDraw();});
+
+// record
+let REC={rows:[],holds:[]};
+function sampleRec(){
+  const v=V(),F=v.load*v.sf,c={p:v.pp.p,A:v.pp.A,soil:v.soil};REC.rows=[];
+  const dEnd=depthFor(F,v)||30;
+  for(let z=0.5;z<dEnd;z+=0.5){const t=resist(z,c)/G;REC.rows.push({d:+z.toFixed(2),g:+t2g(t,v).toFixed(v.U.d),note:Math.abs(z-12)<0.01?'ต่อเสาท่อนที่ 2 (เชื่อม)':''});}
+  REC.rows.push({d:+dEnd.toFixed(2),g:+t2g(F,v).toFixed(v.U.d),note:'ถึงแรงเป้าหมาย'});
+  REC.holds=[{g:+t2g(F,v).toFixed(v.U.d),s:30,set:1.2},{g:+t2g(F,v).toFixed(v.U.d),s:30,set:0.5}];
+  renderRec();
+}
+function renderRec(){
+  const v=V();
+  $('#rBody').innerHTML=REC.rows.map((r,i)=>`<tr><td><input type="number" step="0.1" data-i="${i}" data-k="d" value="${r.d}" style="width:72px"></td><td><input type="number" step="any" data-i="${i}" data-k="g" value="${r.g}" style="width:84px"></td><td class="mono">${fmt(g2t(r.g||0,v),1)}</td><td><input type="text" data-i="${i}" data-k="note" value="${r.note||''}" style="width:150px"></td><td><button class="btn" data-del="${i}" style="padding:1px 7px">×</button></td></tr>`).join('');
+  $('#hBody').innerHTML=REC.holds.map((h,i)=>`<tr><td>${i+1}</td><td><input type="number" step="any" data-h="${i}" data-k="g" value="${h.g}" style="width:84px"></td><td class="mono">${fmt(g2t(h.g||0,v),1)}</td><td><input type="number" data-h="${i}" data-k="s" value="${h.s}" style="width:64px"></td><td><input type="number" step="0.1" data-h="${i}" data-k="set" value="${h.set}" style="width:64px"></td></tr>`).join('');
+  recChart();
+}
+$('#rBody').addEventListener('input',e=>{const t=e.target;if(t.dataset.i===undefined)return;const r=REC.rows[+t.dataset.i];r[t.dataset.k]=t.dataset.k==='note'?t.value:parseFloat(t.value);
+  const v=V();t.closest('tr').children[2].textContent=fmt(g2t(r.g||0,v),1);recChart();});
+$('#rBody').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!==undefined){REC.rows.splice(+d,1);renderRec();}});
+$('#hBody').addEventListener('input',e=>{const t=e.target;if(t.dataset.h===undefined)return;const h=REC.holds[+t.dataset.h];h[t.dataset.k]=parseFloat(t.value);const v=V();t.closest('tr').children[2].textContent=fmt(g2t(h.g||0,v),1);});
+$('#rAdd').onclick=()=>{const l=REC.rows[REC.rows.length-1];REC.rows.push({d:l?+(l.d+0.5).toFixed(2):0.5,g:l?l.g:0,note:''});renderRec();const lb=$('#rBody').closest('.logbox');lb.scrollTop=lb.scrollHeight;};
+$('#hAdd').onclick=()=>{const l=REC.holds[REC.holds.length-1]||{g:0,s:30,set:0};REC.holds.push({...l});renderRec();};
+$('#rClear').onclick=()=>{REC={rows:[{d:0.5,g:0,note:''}],holds:[{g:0,s:0,set:0}]};renderRec();};
+$('#rSample').onclick=sampleRec;
+$('#rCopy').onclick=()=>{
+  const v=V();const H=[['โครงการ',$('#rProj').value],['เลขเสา',$('#rNo').value],['วันที่',$('#rDate').value],['ชนิดเสา',$('#rType').value],['ความยาว',$('#rLen').value],['เครื่อง/พื้นที่ลูกสูบ',$('#rMach').value],['เวลาเริ่ม',$('#rT0').value],['เวลาเสร็จ',$('#rT1').value],['แนวดิ่ง',$('#rVert').value],['แรงเป้าหมาย (ตัน)',fmt(v.load*v.sf,1)]];
+  let s=H.map(r=>r.join('\t')).join('\n')+'\n\nความลึก (ม.)\tเกจ ('+v.U.l+')\tแรง (ตัน)\tหมายเหตุ\n'+REC.rows.map(r=>[r.d,r.g,g2t(r.g||0,v).toFixed(1),r.note||''].join('\t')).join('\n');
+  s+='\n\nรอบคงแรง\tเกจ ('+v.U.l+')\tแรง (ตัน)\tคงแรง (วินาที)\tทรุด (มม.)\n'+REC.holds.map((h,i)=>[i+1,h.g,g2t(h.g||0,v).toFixed(1),h.s,h.set].join('\t')).join('\n');
+  s+=`\n\nผู้ควบคุมรถกด\t${$('#rOp').value}\nผู้ควบคุมงาน\t${$('#rSup').value}\nวิศวกร\t${$('#rEng').value}`;
+  const box=$('#rCopyBox');box.value=s;
+  const ok=()=>{$('#rCopy').textContent='✓ คัดลอกแล้ว — วางใน Excel ได้เลย';setTimeout(()=>$('#rCopy').textContent='คัดลอกไป Excel',2500);};
+  try{navigator.clipboard.writeText(s).then(ok,()=>{box.style.display='block';box.select();});}catch(e){box.style.display='block';box.select();}
+};
+function recChart(){
+  const v=V(),svg=$('#rChart');svg.innerHTML='';const F=v.load*v.sf;
+  const pts=REC.rows.filter(r=>isFinite(r.d)&&isFinite(r.g)).map(r=>[r.d,g2t(r.g,v)]);
+  const dmax=Math.max(5,Math.ceil((Math.max(0,...pts.map(p=>p[0]))+1)/5)*5),fmax=Math.max(F*1.25,...pts.map(p=>p[1]*1.05));
+  const x0=46,y0=24,w=350,h=270,X=f=>x0+f/fmax*w,Y=d=>y0+d/dmax*h;
+  const step=fmax>150?50:fmax>60?20:10;
+  for(let f=0;f<=fmax;f+=step){el('line',{x1:X(f),x2:X(f),y1:y0,y2:y0+h,stroke:'#eee'},svg);el('text',{x:X(f),y:y0-6,'text-anchor':'middle','font-size':10,fill:'#5d6874'},svg).textContent=f;}
+  for(let d=0;d<=dmax;d+=dmax>20?5:2){el('line',{x1:x0,x2:x0+w,y1:Y(d),y2:Y(d),stroke:'#eee'},svg);el('text',{x:x0-6,y:Y(d)+4,'text-anchor':'end','font-size':10,fill:'#5d6874'},svg).textContent=d;}
+  el('line',{x1:X(F),x2:X(F),y1:y0,y2:y0+h,stroke:'#2c8a57','stroke-dasharray':'6 4','stroke-width':2},svg);
+  el('text',{x:X(F)-4,y:y0+h-6,'text-anchor':'end','font-size':11,fill:'#2c8a57'},svg).textContent='เป้าหมาย '+fmt(F,0)+' ตัน';
+  el('line',{x1:X(v.load),x2:X(v.load),y1:y0,y2:y0+h,stroke:'#2e6bb3','stroke-dasharray':'2 4'},svg);
+  el('text',{x:X(v.load)+4,y:y0+14,'font-size':11,fill:'#2e6bb3'},svg).textContent='น้ำหนักปลอดภัย';
+  if(v.minD<=dmax){el('line',{x1:x0,x2:x0+w,y1:Y(v.minD),y2:Y(v.minD),stroke:'#c4372b','stroke-dasharray':'4 3'},svg);el('text',{x:x0+4,y:Y(v.minD)-4,'font-size':11,fill:'#c4372b'},svg).textContent='ความลึกขั้นต่ำ';}
+  if(pts.length){el('path',{d:pts.map((p,i)=>(i?'L':'M')+X(p[1]).toFixed(1)+' '+Y(p[0]).toFixed(1)).join(''),fill:'none',stroke:'#e0601b','stroke-width':2.5},svg);pts.forEach(p=>el('circle',{cx:X(p[1]),cy:Y(p[0]),r:2.5,fill:'#e0601b'},svg));}
+  el('text',{x:x0+w,y:y0+h+20,'text-anchor':'end','font-size':11,fill:'#5d6874'},svg).textContent='แรงกด (ตัน) →';
+  el('text',{x:4,y:y0+h+20,'font-size':11,fill:'#5d6874'},svg).textContent='ลึก (ม.) ↓';
+}
+function confirmEval(){
+  const v=V(),F=v.load*v.sf,cyc=+$('#cCyc').value,hold=+$('#cHold').value,setL=+$('#cSet').value;
+  const maxD=Math.max(0,...REC.rows.map(r=>r.d||0));
+  const hs=REC.holds.map(h=>({F:g2t(h.g||0,v),s:h.s||0,set:h.set||0}));
+  const good=hs.filter(h=>h.F>=F*0.995);
+  let drop=null;const rs=REC.rows.filter(r=>isFinite(r.d)&&isFinite(r.g)).sort((a,b)=>a.d-b.d);
+  for(let i=1;i<rs.length;i++){const a=g2t(rs[i-1].g,v),b=g2t(rs[i].g,v);if(a>10&&b<a*0.7){drop=rs[i].d;break;}}
+  const items=[
+    [good.length>=1,`แรงกดสุดท้ายถึง ${fmt(F,1)} ตัน (อ่านเกจ ≥ ${fmt(t2g(F,v),v.U.d)} ${v.U.l})`,`สูงสุดในรอบคงแรง: ${fmt(Math.max(0,...hs.map(h=>h.F)),1)} ตัน`],
+    [good.length>=cyc,`คงแรงที่เป้าหมายครบ ${cyc} รอบ`,`ทำได้ ${good.length} รอบ`],
+    [good.length>0&&good.every(h=>h.s>=hold),`แต่ละรอบคงแรงนาน ≥ ${hold} วินาที`,good.map(h=>h.s+' วิ').join(', ')||'–'],
+    [good.length>0&&good.every(h=>h.set<=setL),`ทรุดระหว่างคงแรง ≤ ${setL} มม. ทุกรอบ`,good.map(h=>h.set+' มม.').join(', ')||'–'],
+    [maxD>=v.minD,`ความลึกปลายเสา ≥ ${v.minD} ม. ตามแบบ`,`ได้ ${fmt(maxD,2)} ม.`],
+    [drop===null,'กราฟแรง–ความลึกไม่มีแรงตกฮวบผิดปกติ (อาจหมายถึงเสาแตก/รอยต่อเสียหาย/ชั้นดินอ่อนแทรก)',drop===null?'ปกติ':`แรงลดลงผิดปกติที่ ${drop} ม.`]
+  ];
+  $('#cList').innerHTML=items.map(([ok,t,d])=>`<li style="padding:7px 0;border-bottom:1px solid var(--line)"><b style="color:${ok?'var(--green)':'var(--red)'}">${ok?'✓':'✗'}</b> ${t}<br><span class="note">${d}</span></li>`).join('');
+  const all=items.every(i=>i[0]);const c=$('#cVerdict');
+  c.className='callout'+(all?'':' red');
+  c.innerHTML=all?`✅ <b>ผ่านเกณฑ์</b> — เสาต้นนี้แสดงแรงต้านไม่น้อยกว่า ${fmt(F,0)} ตัน อย่างคงที่ ⇒ รับน้ำหนักปลอดภัยได้ <b>${v.load} ตัน</b> (ที่ค่าความปลอดภัย ${v.sf}) ลงนามรับรองในแบบบันทึกได้`
+    :`⛔ <b>ยังไม่ผ่าน</b> — ห้ามตัดหัวเสา ให้กดต่อ/กดซ้ำ หรือรายงานวิศวกรเพื่อพิจารณา (เช่น เพิ่มความยาว ลดน้ำหนักบรรทุกของต้นนี้ หรือเพิ่มเสา)`;
+}
+['#cCyc','#cHold','#cSet'].forEach(s=>$(s).addEventListener('input',confirmEval));
+
+// static load test
+let SL;
+function sReset(){const mx=+$('#sMax').value;const up=[];for(let p=0;p<=mx;p+=25)up.push(p);const dn=up.slice(0,-1).reverse();SL={seq:up.concat(dn),i:-1,rows:[],peak:0,sMaxE:0,sMaxS:0};$('#sQuV').textContent=$('#sQu').value;$('#sBody').innerHTML='';$('#sMsg').className='callout';$('#sMsg').innerHTML='กด “ขั้นถัดไป” เพื่อเริ่มใส่น้ำหนัก';sDraw();}
+function sModel(Q){const v=V(),Lc=(+$('#sL').value)*100,E=3.4e5,Acm=v.pp.A*1e4,Qu=+$('#sQu').value;
+  const se=Q*1000*Lc/(Acm*E)*10*0.55; const r=Q/Qu; const ss=r>=0.985?60+200*(r-0.985):3*r/(1-0.95*r);return {se,ss,r};}
+function sStep(){
+  if(SL.i>=SL.seq.length-1)return false;SL.i++;const v=V(),p=SL.seq[SL.i],Q=v.load*p/100;const loading=SL.i===0||p>=SL.seq[SL.i-1];
+  let s1,s5;
+  if(loading){const m=sModel(Q);s1=m.se+m.ss;s5=s1*(1+0.06*m.r*m.r)+(m.r>=0.985?25:0);SL.peak=Math.max(SL.peak,Q);SL.sMaxE=m.se;SL.sMaxS=s5-m.se;SL.top=s5;}
+  else{const mp=sModel(SL.peak),m=sModel(Q);s5=SL.top-(mp.se-m.se)*0.92-(SL.sMaxS*0.25)*(1-Q/SL.peak);s1=s5+0.03;}
+  SL.rows.push({p,Q,s1,s5,loading});
+  const tr=document.createElement('tr');tr.innerHTML=`<td>${SL.i+1}</td><td>${p}%</td><td>${fmt(Q,1)}</td><td>${fmt(t2g(Q,v),v.U.d)}</td><td>${fmt(s1,2)}</td><td>${fmt(s5,2)}</td>`;$('#sBody').appendChild(tr);const lb=$('#sBody').closest('.logbox');lb.scrollTop=lb.scrollHeight;
+  sDraw();return true;
+}
+function sDraw(){
+  if(!SL)return;const v=V(),svg=$('#sChart');svg.innerHTML='';const mx=+$('#sMax').value,Qmax=v.load*mx/100;
+  const x0=50,y0=26,w=360,h=260;const smax=Math.max(20,...SL.rows.map(r=>r.s5*1.1));const X=q=>x0+q/(Qmax*1.08)*w,Y=s=>y0+s/smax*h;
+  for(let p=0;p<=mx;p+=25){const q=v.load*p/100;el('line',{x1:X(q),x2:X(q),y1:y0,y2:y0+h,stroke:'#eee'},svg);el('text',{x:X(q),y:y0-8,'text-anchor':'middle','font-size':9,fill:'#5d6874'},svg).textContent=fmt(q,0);}
+  const ss=smax>60?20:smax>30?5:2;for(let s=0;s<=smax;s+=ss){el('line',{x1:x0,x2:x0+w,y1:Y(s),y2:Y(s),stroke:'#eee'},svg);el('text',{x:x0-6,y:Y(s)+4,'text-anchor':'end','font-size':10,fill:'#5d6874'},svg).textContent=s;}
+  // Davisson
+  const Lc=(+$('#sL').value)*100,E=3.4e5,Acm=v.pp.A*1e4,Dmm=v.pp.b*1000;const off=3.81+Dmm/120;
+  const dv=q=>q*1000*Lc/(Acm*E)*10+off;
+  el('line',{x1:X(0),y1:Y(off),x2:X(Qmax*1.08),y2:Y(dv(Qmax*1.08)),stroke:'#2c8a57','stroke-dasharray':'6 4','stroke-width':2},svg);
+  el('line',{x1:X(v.load*v.sf),x2:X(v.load*v.sf),y1:y0,y2:y0+h,stroke:'#e0601b','stroke-dasharray':'2 4'},svg);
+  el('text',{x:X(v.load),y:y0+h+16,'text-anchor':'middle','font-size':10,fill:'#2e6bb3'},svg).textContent='100%';
+  if(SL.rows.length){const pts=[[0,0]].concat(SL.rows.map(r=>[r.Q,r.s5]));
+    el('path',{d:pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join(''),fill:'none',stroke:'#e0601b','stroke-width':2.5},svg);
+    pts.forEach(p=>el('circle',{cx:X(p[0]),cy:Y(p[1]),r:3,fill:'#e0601b'},svg));}
+  el('text',{x:x0+w,y:y0+h+30,'text-anchor':'end','font-size':11,fill:'#5d6874'},svg).textContent='น้ำหนักทดสอบ (ตัน) →';
+  el('text',{x:4,y:y0+h+30,'font-size':11,fill:'#5d6874'},svg).textContent='ทรุด (มม.) ↓';
+  // messages
+  if(SL.i===SL.seq.length-1){
+    const up=SL.rows.filter(r=>r.loading);let qD=null;for(let i=1;i<up.length;i++){if(up[i].s5>=dv(up[i].Q)&&up[i-1].s5<dv(up[i-1].Q)){qD=up[i].Q;break;}}
+    const res=SL.rows[SL.rows.length-1].s5,maxs=Math.max(...SL.rows.map(r=>r.s5));const failed=maxs>=60;
+    const m=$('#sMsg');m.className='callout'+(failed||qD?' red':'');
+    m.innerHTML=failed?`⛔ เสาทรุดต่อเนื่อง (plunging) ก่อนถึง ${mx}% — กำลังรับน้ำหนักไม่พอ ต้องแจ้งวิศวกรทบทวนออกแบบ/ความยาวเสา`
+      :qD?`⚠️ กราฟตัดเส้น Davisson ที่ราว ${fmt(qD,0)} ตัน → กำลังประลัยตามวิธีนี้ ≈ ${fmt(qD,0)} ตัน หาร 2 ได้ ≈ ${fmt(qD/2,0)} ตัน ${qD/2>=v.load?'(ยังรับ '+v.load+' ตันได้)':'— ต่ำกว่า '+v.load+' ตัน'}`
+      :`✅ ถึง ${mx}% (${fmt(Qmax,0)} ตัน) ทรุดสูงสุด ${fmt(maxs,2)} มม. ทรุดคงค้างหลังถอดน้ำหนัก ${fmt(res,2)} มม. และไม่ตัดเส้น Davisson → ยืนยันว่ารับ ${v.load} ตันได้ (เทียบเกณฑ์ที่วิศวกรกำหนด)`;
+  }
+}
+$('#sStep').onclick=()=>{if(!sStep()){sReset();sStep();}};
+$('#sAll').onclick=()=>{if(SL.i>=SL.seq.length-1)sReset();while(sStep());};
+$('#sReset').onclick=sReset;['#sMax','#sQu','#sL'].forEach(s=>$(s).addEventListener('input',sReset));
+['#vLoad','#vSF','#vPile','#vUnit','#vBore','#vN','#vEff'].forEach(s=>$(s).addEventListener('change',sReset));
+try{$('#rDate').value=new Date().toISOString().slice(0,10);}catch(e){}
+vCalc();sampleRec();sReset();
+
+})();
+</script>
+</body>
+</html>
