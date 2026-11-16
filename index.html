@@ -135,13 +135,30 @@ ol.src li{margin-bottom:4px}
 <!-- VIDEO -->
 <section id="video">
   <h2><span class="no">▶</span>วิดีโออธิบายการทำงาน (4 นาที)</h2>
-  <p class="lead">ดูภาพรวมทั้งหมดก่อน แล้วค่อยเลื่อนลงไปกดเล่นแต่ละส่วนด้านล่าง</p>
+  <p class="lead">เลือกภาษาเสียงพากย์ได้ — ซับไตเติลบนภาพเป็นภาษาไทยทั้งสองเวอร์ชัน</p>
   <div class="card" style="padding:10px">
-    <video controls preload="metadata" poster="pile-driver-poster.jpg" style="width:100%;border-radius:10px;background:#1c2530;display:block">
-      <source src="pile-driver-video.mp4" type="video/mp4">
-      เบราว์เซอร์นี้เล่นวิดีโอไม่ได้ — <a href="pile-driver-video.mp4">ดาวน์โหลดวิดีโอ</a>
+    <div class="row" style="margin-bottom:8px" id="vidLang">
+      <button class="btn on" data-src="pile-driver-video-TH.mp4">🇹🇭 พากย์ไทย</button>
+      <button class="btn" data-src="pile-driver-video-EN.mp4">🇬🇧 English voice</button>
+    </div>
+    <video id="mainVideo" controls preload="metadata" poster="pile-driver-poster.jpg" src="pile-driver-video-TH.mp4" style="width:100%;border-radius:10px;background:#1c2530;display:block">
+      เบราว์เซอร์นี้เล่นวิดีโอไม่ได้ — <a href="pile-driver-video-TH.mp4">ดาวน์โหลดวิดีโอ</a>
     </video>
   </div>
+  <script>
+  (function(){
+    var v=document.getElementById('mainVideo');
+    document.querySelectorAll('#vidLang button').forEach(function(b){
+      b.addEventListener('click',function(){
+        if(v.getAttribute('src')===b.dataset.src)return;
+        var t=v.currentTime||0,play=!v.paused;
+        document.querySelectorAll('#vidLang button').forEach(function(x){x.classList.toggle('on',x===b);});
+        v.setAttribute('src',b.dataset.src);v.load();
+        v.addEventListener('loadedmetadata',function f(){v.removeEventListener('loadedmetadata',f);try{v.currentTime=t;}catch(e){}if(play)v.play().catch(function(){});});
+      });
+    });
+  })();
+  </script>
 </section>
 
 <!-- 1 PRINCIPLE -->
